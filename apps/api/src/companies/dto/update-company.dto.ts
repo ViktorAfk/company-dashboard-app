@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Location, Price } from '@prisma/client';
 import { IsOptional } from 'class-validator';
 
 export class UpdateCompanyDto {
@@ -18,12 +17,4 @@ export class UpdateCompanyDto {
   @ApiProperty()
   @IsOptional()
   createdDate: string;
-
-  @ApiProperty()
-  @IsOptional()
-  location: Location;
-
-  @ApiProperty()
-  @IsOptional()
-  prices: Price[];
 }

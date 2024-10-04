@@ -35,6 +35,10 @@ export class CompaniesService {
         where: {
           userId,
         },
+        include: {
+          Location: true,
+          prices: true,
+        },
       });
     }
     return this.databaseService.company.findMany();
@@ -53,26 +57,11 @@ export class CompaniesService {
   }
 
   update(id: number, updateCompanyDto: UpdateCompanyDto) {
-    const { prices, location, ...updateData } = updateCompanyDto;
-
     return this.databaseService.company.update({
       where: {
         id,
       },
-      data: {
-        ...updateData,
-        Location: {
-          update: {
-            ...location,
-          },
-        },
-        prices: {
-          updateMany: prices.map(({ id, date, price }) => ({
-            where: { id },
-            data: { price, date },
-          })),
-        },
-      },
+      data: updateCompanyDto,
     });
   }
 

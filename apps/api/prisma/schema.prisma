@@ -46,14 +46,14 @@ model Location {
   city      String
   street    String
   building  Int
-  company   Company @relation(fields: [compnayId], references: [id], onDelete: Cascade)
-  compnayId Int     @unique
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId Int     @unique
 }
 
 model Price {
   id        Int     @id @default(autoincrement())
   date      String
   price     Int
-  company   Company @relation(fields: [compnayId], references: [id], onDelete: Cascade)
-  compnayId Int     @unique
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId Int     @unique
 }
