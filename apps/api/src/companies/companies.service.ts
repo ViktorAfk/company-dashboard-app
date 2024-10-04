@@ -7,7 +7,7 @@ import { UpdateCompanyDto } from './dto/update-company.dto';
 export class CompaniesService {
   constructor(private readonly databaseService: DatabaseService) {}
   create(createCompanyDto: CreateCompanyDto) {
-    const { location, price, ...companyData } = createCompanyDto;
+    const { location, prices, ...companyData } = createCompanyDto;
     return this.databaseService.company.create({
       data: {
         ...companyData,
@@ -17,22 +17,14 @@ export class CompaniesService {
           },
         },
         prices: {
-          create: {
-            ...price,
+          createMany: {
+            data: prices,
           },
         },
       },
       include: {
-        prices: {
-          select: {
-            id: true,
-          },
-        },
-        Location: {
-          select: {
-            id: true,
-          },
-        },
+        prices: true,
+        Location: true,
       },
     });
   }
@@ -52,6 +44,10 @@ export class CompaniesService {
     return this.databaseService.company.findUnique({
       where: {
         id,
+      },
+      include: {
+        Location: true,
+        prices: true,
       },
     });
   }

@@ -35,5 +35,5 @@ export class CreateCompanyDto
 
   @IsNotEmpty()
   @ApiProperty()
-  price: Omit<Price, 'id' | 'companyId'>[];
+  prices: Omit<Price, 'id' | 'companyId'>[];
 }
