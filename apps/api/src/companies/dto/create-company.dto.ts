@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Company, Location, Price } from '@prisma/client';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsInt, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateCompanyDto
   implements Omit<Company, 'id' | 'createdAt' | 'updatedAt'>
@@ -27,6 +27,7 @@ export class CreateCompanyDto
 
   @IsNotEmpty()
   @ApiProperty()
+  @IsInt()
   userId: number;
 
   @IsNotEmpty()

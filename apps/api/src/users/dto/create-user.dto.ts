@@ -1,6 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { $Enums, User } from '@prisma/client';
-import { IsNotEmpty, IsString, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsString,
+  MinLength,
+} from 'class-validator';
 
 export class CreateUserDto
   implements Omit<User, 'id' | 'createdAt' | 'updatedAt'>
@@ -21,12 +27,13 @@ export class CreateUserDto
   @MinLength(8)
   password: string;
 
-  @IsString()
+  @IsEmail()
   @IsNotEmpty()
-  @ApiProperty()
+  @ApiProperty({ description: 'User email' })
   email: string;
 
-  @ApiProperty()
+  @ApiProperty({ description: 'Role of the user', enum: $Enums.Role })
   @IsNotEmpty()
+  @IsEnum($Enums.Role)
   role: $Enums.Role;
 }
