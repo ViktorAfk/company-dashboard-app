@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Company, Price } from '@prisma/client';
+import { Company, Location, Price } from '@prisma/client';
 
 export class CompanyEntity implements Company {
   @ApiProperty()
