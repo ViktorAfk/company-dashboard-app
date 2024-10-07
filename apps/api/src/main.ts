@@ -13,6 +13,7 @@ async function bootstrap() {
     .setTitle('Company dashboard API')
     .setDescription('The Company dashboard API description')
     .setVersion('0.1')
+    .addBearerAuth()
     .build();
 
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));

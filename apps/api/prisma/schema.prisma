@@ -17,6 +17,7 @@ model User {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   companies Company[]
+  token     Token?
 }
 
 enum Role {
@@ -56,4 +57,11 @@ model Price {
   price     Int
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId Int     @unique
+}
+
+model Token {
+  id           Int    @id @default(autoincrement())
+  refreshToken String @unique
+  user         User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       Int    @unique
 }

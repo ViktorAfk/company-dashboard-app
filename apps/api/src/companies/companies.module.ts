@@ -7,5 +7,6 @@ import { CompaniesService } from './companies.service';
   controllers: [CompaniesController],
   providers: [CompaniesService],
   imports: [DatabaseModule],
+  exports: [CompaniesService],
 })
 export class CompaniesModule {}
