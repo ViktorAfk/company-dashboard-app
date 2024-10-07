@@ -6,6 +6,9 @@ import { LocationsModule } from './locations/locations.module';
 import { PricesModule } from './prices/prices.module';
 import { PrismaClientExceptionFilter } from './prisma-client-exception/prisma-client-exception.filter';
 import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
+import { TokensModule } from './tokens/tokens.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -14,6 +17,9 @@ import { UsersModule } from './users/users.module';
     CompaniesModule,
     PricesModule,
     LocationsModule,
+    AuthModule,
+    TokensModule,
+    DashboardModule,
   ],
   controllers: [],
   providers: [

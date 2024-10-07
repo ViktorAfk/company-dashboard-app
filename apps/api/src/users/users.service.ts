@@ -1,14 +1,23 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Role } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
 import { DatabaseService } from 'src/database/database.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
+const salt = process.env.SALT_ROUNDS;
 @Injectable()
 export class UsersService {
   constructor(private readonly databaseService: DatabaseService) {}
-  create(createUserDto: CreateUserDto) {
-    return this.databaseService.user.create({ data: createUserDto });
+  async create(createUserDto: CreateUserDto) {
+    const hashedPassword = await bcrypt.hash(
+      createUserDto.password,
+      Number(salt),
+    );
+    console.log(hashedPassword);
+    return this.databaseService.user.create({
+      data: { ...createUserDto, password: hashedPassword },
+    });
   }
 
   findAll(role?: Role) {
@@ -33,6 +42,14 @@ export class UsersService {
     }
 
     return user;
+  }
+
+  findByEmail(email: string) {
+    return this.databaseService.user.findUnique({
+      where: {
+        email,
+      },
+    });
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
