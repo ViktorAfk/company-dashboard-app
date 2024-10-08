@@ -20,15 +20,22 @@ export class UsersService {
     });
   }
 
-  findAll(role?: Role) {
+  async findAll(role?: Role, page?: number, perPage?: number) {
+    const skipItems = page > 0 ? perPage * (page - 1) : 0;
+
     if (role) {
       return this.databaseService.user.findMany({
+        skip: skipItems,
+        take: perPage,
         where: {
           role,
         },
       });
     }
-    return this.databaseService.user.findMany();
+    return this.databaseService.user.findMany({
+      skip: skipItems,
+      take: perPage,
+    });
   }
 
   async findOne(id: number) {

@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { GetCurrentUser } from 'src/common/decorators';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UserEntity } from 'src/users/entities/user.entity';
@@ -32,6 +32,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('logout')
   @ApiOkResponse()
+  @ApiBearerAuth()
   async logout(@GetCurrentUser('sub') userId: number) {
     await this.authService.logout(userId);
   }
@@ -39,6 +40,7 @@ export class AuthController {
   @UseGuards(RefreshAuthGuard)
   @Post('refresh')
   @ApiOkResponse()
+  @ApiBearerAuth()
   async refresh(
     @GetCurrentUser('sub') userId: number,
     @GetCurrentUser('refreshToken') refreshToken: string,

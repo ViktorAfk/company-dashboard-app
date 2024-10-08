@@ -29,18 +29,42 @@ export class CompaniesService {
     });
   }
 
-  findAll(userId?: number) {
-    if (userId) {
-      return this.databaseService.company.findMany({
-        where: {
-          userId,
+  findAllUsersCompany(
+    userId: number,
+    query: {
+      name: string;
+      service: string;
+      sortByCreatedDate: 'asc' | 'desc';
+      sortByCapital: 'asc' | 'decs';
+    },
+  ) {
+    const { name, service, sortByCapital, sortByCreatedDate } = query;
+
+    return this.databaseService.company.findMany({
+      orderBy: [
+        {
+          createdDate: sortByCreatedDate,
         },
-        include: {
-          Location: true,
-          prices: true,
+      ],
+      where: {
+        userId,
+        companyName: {
+          contains: name,
+          mode: 'insensitive',
         },
-      });
-    }
+        service: {
+          contains: service,
+          mode: 'insensitive',
+        },
+      },
+      include: {
+        Location: true,
+        prices: true,
+      },
+    });
+  }
+
+  findAll() {
     return this.databaseService.company.findMany();
   }
 

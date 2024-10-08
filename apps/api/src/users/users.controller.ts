@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -15,6 +16,7 @@ import {
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { Role } from '@prisma/client';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -38,8 +40,13 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOkResponse({ type: UserEntity, isArray: true })
-  async findAll() {
-    const users = await this.usersService.findAll();
+  async findAll(
+    @Query('page', ParseIntPipe) page?: number,
+    @Query('perPage', ParseIntPipe) perPage?: number,
+    @Query('role') role?: Role,
+  ) {
+    console.log(page, perPage);
+    const users = await this.usersService.findAll(role, page, perPage);
     return users.map((user) => new UserEntity(user));
   }
 
