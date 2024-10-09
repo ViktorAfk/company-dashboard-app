@@ -17,7 +17,23 @@ export class DashboardService {
     return this.userService.findAll('ADMIN');
   }
 
-  getAllCompanies() {
-    return this.companiesService.findAll();
+  getAllCompanies(query: {
+    searchByName?: string;
+    searchByService?: string;
+    sortByCreatedDate?: 'asc' | 'desc';
+    sortByCapital?: 'asc' | 'desc';
+    page?: number;
+    limit?: number;
+  }) {
+    return this.companiesService.findAll(query);
+  }
+
+  gatCompaniesForAdmins(query: {
+    searchByName?: string;
+    sortByCapital?: 'asc' | 'desc';
+    page?: number;
+    limit?: number;
+  }) {
+    return this.companiesService.findAllForAdminsDashboard(query);
   }
 }

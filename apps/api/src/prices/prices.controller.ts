@@ -30,8 +30,8 @@ export class PricesController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiCreatedResponse({ type: PriceEntity })
-  create(@Body() createPriceDto: CreatePriceDto) {
-    return this.pricesService.create(createPriceDto);
+  create(@Body() createPriceDto: CreatePriceDto[]) {
+    return this.pricesService.createMany(createPriceDto);
   }
 
   @Get()

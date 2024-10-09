@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Role } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import { getSkippedItems } from 'src/common/decorators/get-skipped-items';
 import { DatabaseService } from 'src/database/database.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -20,15 +21,22 @@ export class UsersService {
     });
   }
 
-  findAll(role?: Role) {
+  async findAll(role?: Role, page = 1, limit = 8) {
+    const skippedItems = getSkippedItems(page, limit);
+
     if (role) {
       return this.databaseService.user.findMany({
+        skip: skippedItems,
+        take: limit,
         where: {
           role,
         },
       });
     }
-    return this.databaseService.user.findMany();
+    return this.databaseService.user.findMany({
+      skip: skippedItems,
+      take: limit,
+    });
   }
 
   async findOne(id: number) {

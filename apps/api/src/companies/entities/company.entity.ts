@@ -15,6 +15,9 @@ export class CompanyEntity implements Company {
   description: string;
 
   @ApiProperty()
+  capital: number;
+
+  @ApiProperty()
   createdDate: string;
 
   @ApiProperty()

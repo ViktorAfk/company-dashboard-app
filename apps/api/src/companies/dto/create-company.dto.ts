@@ -22,6 +22,10 @@ export class CreateCompanyDto
 
   @IsNotEmpty()
   @ApiProperty()
+  capital: number;
+
+  @IsNotEmpty()
+  @ApiProperty()
   @IsString()
   createdDate: string;
 

@@ -31,10 +31,11 @@ model Company {
   companyName String    @unique
   service     String
   description String
+  capital     Float
   createdDate String
   Location    Location?
   user        User      @relation(fields: [userId], references: [id])
-  userId      Int       @unique
+  userId      Int
   prices      Price[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -54,9 +55,9 @@ model Location {
 model Price {
   id        Int     @id @default(autoincrement())
   date      String
-  price     Int
+  price     Float
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  companyId Int     @unique
+  companyId Int
 }
 
 model Token {
