@@ -6,8 +6,8 @@ import { UpdatePriceDto } from './dto/update-price.dto';
 @Injectable()
 export class PricesService {
   constructor(private readonly databaseService: DatabaseService) {}
-  create(createPriceDto: CreatePriceDto) {
-    return this.databaseService.price.create({ data: createPriceDto });
+  createMany(createPriceDto: CreatePriceDto[]) {
+    return this.databaseService.price.createMany({ data: createPriceDto });
   }
 
   findAll(companyId: number) {

@@ -7,5 +7,6 @@ import { PricesService } from './prices.service';
   controllers: [PricesController],
   providers: [PricesService],
   imports: [DatabaseModule],
+  exports: [PricesService],
 })
 export class PricesModule {}

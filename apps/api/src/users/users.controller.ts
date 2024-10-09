@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   Param,
@@ -41,11 +42,10 @@ export class UsersController {
   @ApiBearerAuth()
   @ApiOkResponse({ type: UserEntity, isArray: true })
   async findAll(
-    @Query('page', ParseIntPipe) page?: number,
-    @Query('perPage', ParseIntPipe) perPage?: number,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page?: number,
+    @Query('perPage', new DefaultValuePipe(8), ParseIntPipe) perPage?: number,
     @Query('role') role?: Role,
   ) {
-    console.log(page, perPage);
     const users = await this.usersService.findAll(role, page, perPage);
     return users.map((user) => new UserEntity(user));
   }

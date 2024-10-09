@@ -16,5 +16,9 @@ export class UpdateCompanyDto {
 
   @ApiProperty()
   @IsOptional()
+  capital: number;
+
+  @ApiProperty()
+  @IsOptional()
   createdDate: string;
 }

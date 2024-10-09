@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -16,9 +17,10 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { GetCurrentUser } from 'src/common/decorators';
 import { CompaniesService } from './companies.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
-import { QueryDto } from './dto/query.dto';
+import { QueryCompanyDto } from './dto/query-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { CompanyEntity } from './entities/company.entity';
 
@@ -27,43 +29,49 @@ import { CompanyEntity } from './entities/company.entity';
 export class CompaniesController {
   constructor(private readonly companiesService: CompaniesService) {}
 
-  @Post()
   @UseGuards(JwtAuthGuard)
+  @Post()
   @ApiBearerAuth()
   @ApiCreatedResponse({ type: CompanyEntity })
   create(@Body() createCompanyDto: CreateCompanyDto) {
     return this.companiesService.create(createCompanyDto);
   }
 
-  @Get()
   @UseGuards(JwtAuthGuard)
+  @Get()
   @ApiBearerAuth()
   @ApiOkResponse({ type: CompanyEntity, isArray: true })
-  findAllByUser(@Param('id') id: number, @Query() query: QueryDto) {
-    return this.companiesService.findAllUsersCompany(id, query);
+  findAllByUser(
+    @GetCurrentUser('sub') userId: number,
+    @Query() query: QueryCompanyDto,
+  ) {
+    return this.companiesService.findAllUsersCompany(userId, query);
   }
 
-  @Get(':id')
   @UseGuards(JwtAuthGuard)
+  @Get(':id')
   @ApiBearerAuth()
   @ApiOkResponse({ type: CompanyEntity })
-  findOne(@Param('id') id: string) {
-    return this.companiesService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.companiesService.findOne(id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOkResponse({ type: CompanyEntity, isArray: true })
-  update(@Param('id') id: string, @Body() updateCompanyDto: UpdateCompanyDto) {
-    return this.companiesService.update(+id, updateCompanyDto);
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateCompanyDto: UpdateCompanyDto,
+  ) {
+    return this.companiesService.update(id, updateCompanyDto);
   }
 
-  @Delete(':id')
   @UseGuards(JwtAuthGuard)
+  @Delete(':id')
   @ApiBearerAuth()
   @ApiOkResponse({ type: CompanyEntity, isArray: true })
-  remove(@Param('id') id: string) {
-    return this.companiesService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.companiesService.remove(id);
   }
 }
