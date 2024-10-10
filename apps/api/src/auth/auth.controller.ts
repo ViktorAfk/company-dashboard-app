@@ -26,7 +26,7 @@ export class AuthController {
   @Post('signup')
   @ApiOkResponse({ type: UserEntity })
   registration(@Body() input: CreateUserDto) {
-    return this.userService.create(input);
+    return this.authService.register(input);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -38,10 +38,10 @@ export class AuthController {
   }
 
   @UseGuards(RefreshAuthGuard)
-  @Post('refresh')
+  @Get('refresh')
   @ApiOkResponse()
   @ApiBearerAuth()
-  async refresh(
+  refresh(
     @GetCurrentUser('sub') userId: number,
     @GetCurrentUser('refreshToken') refreshToken: string,
   ) {

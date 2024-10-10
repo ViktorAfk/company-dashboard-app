@@ -15,7 +15,7 @@ export class UsersService {
       createUserDto.password,
       Number(salt),
     );
-    console.log(hashedPassword);
+
     return this.databaseService.user.create({
       data: { ...createUserDto, password: hashedPassword },
     });
@@ -61,6 +61,16 @@ export class UsersService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
+    const user = await this.databaseService.user.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User with id:${id} doesn't found`);
+    }
+
     return this.databaseService.user.update({
       where: {
         id,

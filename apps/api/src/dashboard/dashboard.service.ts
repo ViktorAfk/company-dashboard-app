@@ -9,12 +9,18 @@ export class DashboardService {
     private readonly companiesService: CompaniesService,
   ) {}
 
-  getAllUsers() {
-    return this.userService.findAll('USER');
+  getAllUsers(query: {
+    page?: number;
+    limit?: number;
+  }) {
+    return this.userService.findAll('USER', query.page, query.limit);
   }
 
-  getAllAdmins() {
-    return this.userService.findAll('ADMIN');
+  getAllAdmins(query: {
+    page?: number;
+    limit?: number;
+  }) {
+    return this.userService.findAll('ADMIN', query.page, query.limit);
   }
 
   getAllCompanies(query: {
@@ -28,12 +34,20 @@ export class DashboardService {
     return this.companiesService.findAll(query);
   }
 
-  gatCompaniesForAdmins(query: {
-    searchByName?: string;
-    sortByCapital?: 'asc' | 'desc';
-    page?: number;
-    limit?: number;
-  }) {
+  getCompaniesForDashBoard(
+    userId: number,
+    role: string,
+    query: {
+      searchByName?: string;
+      sortByCapital?: 'asc' | 'desc';
+      page?: number;
+      limit?: number;
+    },
+  ) {
+    if (role === 'USER') {
+      return this.companiesService.findAllForUsersDashboard(userId, query);
+    }
+
     return this.companiesService.findAllForAdminsDashboard(query);
   }
 }
