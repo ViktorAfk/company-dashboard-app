@@ -15,7 +15,7 @@ export class UsersService {
       createUserDto.password,
       Number(salt),
     );
-    console.log(hashedPassword);
+
     return this.databaseService.user.create({
       data: { ...createUserDto, password: hashedPassword },
     });
@@ -24,19 +24,33 @@ export class UsersService {
   async findAll(role?: Role, page = 1, limit = 8) {
     const skippedItems = getSkippedItems(page, limit);
 
-    if (role) {
-      return this.databaseService.user.findMany({
-        skip: skippedItems,
-        take: limit,
+    const [count, data] = await Promise.all([
+      this.databaseService.user.count({
         where: {
           role,
         },
-      });
-    }
-    return this.databaseService.user.findMany({
-      skip: skippedItems,
-      take: limit,
-    });
+      }),
+
+      this.databaseService.user.findMany({
+        where: {
+          role,
+        },
+        skip: skippedItems,
+        take: limit,
+      }),
+    ]);
+
+    const lastPage = Math.ceil(count / limit);
+
+    return {
+      data,
+      meta: {
+        count,
+        prev: page > 1 ? page - 1 : null,
+        next: page < lastPage ? page + 1 : null,
+        lastPage,
+      },
+    };
   }
 
   async findOne(id: number) {
@@ -61,6 +75,16 @@ export class UsersService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
+    const user = await this.databaseService.user.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User with id:${id} doesn't found`);
+    }
+
     return this.databaseService.user.update({
       where: {
         id,

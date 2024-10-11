@@ -1,18 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { getSkippedItems } from 'src/common/decorators/get-skipped-items';
 import { DatabaseService } from 'src/database/database.service';
-import { LocationsService } from 'src/locations/locations.service';
-import { PricesService } from 'src/prices/prices.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 
 @Injectable()
 export class CompaniesService {
-  constructor(
-    private readonly databaseService: DatabaseService,
-    private readonly locationService: LocationsService,
-    private readonly priceService: PricesService,
-  ) {}
+  constructor(private readonly databaseService: DatabaseService) {}
 
   async create(createCompanyDto: CreateCompanyDto) {
     const { location, prices, ...companyData } = createCompanyDto;
@@ -38,7 +32,7 @@ export class CompaniesService {
     });
   }
 
-  findAllUsersCompany(
+  async findAllUsersCompany(
     userId: number,
     query: {
       searchByName?: string;
@@ -49,46 +43,12 @@ export class CompaniesService {
       limit?: number;
     },
   ) {
-    const {
-      page,
-      limit,
-      searchByName,
-      searchByService,
-      sortByCapital,
-      sortByCreatedDate,
-    } = query;
-    const skipItems = getSkippedItems(page, limit);
+    const data = await this.getPaginationData(query, userId);
 
-    return this.databaseService.company.findMany({
-      orderBy: [
-        {
-          createdDate: sortByCreatedDate,
-        },
-        {
-          capital: sortByCapital,
-        },
-      ],
-      skip: skipItems,
-      take: limit,
-      where: {
-        userId,
-        companyName: {
-          contains: searchByName,
-          mode: 'insensitive',
-        },
-        service: {
-          contains: searchByService,
-          mode: 'insensitive',
-        },
-      },
-      include: {
-        Location: true,
-        prices: true,
-      },
-    });
+    return data;
   }
 
-  findAll(query: {
+  async findAll(query: {
     searchByName?: string;
     searchByService?: string;
     sortByCreatedDate?: 'asc' | 'desc';
@@ -96,45 +56,12 @@ export class CompaniesService {
     page?: number;
     limit?: number;
   }) {
-    const {
-      page,
-      limit,
-      searchByName,
-      searchByService,
-      sortByCapital,
-      sortByCreatedDate,
-    } = query;
-    const skipItems = getSkippedItems(page, limit);
+    const data = await this.getPaginationData(query);
 
-    return this.databaseService.company.findMany({
-      orderBy: [
-        {
-          createdDate: sortByCreatedDate,
-        },
-        {
-          capital: sortByCapital,
-        },
-      ],
-      where: {
-        companyName: {
-          contains: searchByName,
-          mode: 'insensitive',
-        },
-        service: {
-          contains: searchByService,
-          mode: 'insensitive',
-        },
-      },
-      skip: skipItems,
-      take: limit,
-      include: {
-        Location: true,
-        prices: true,
-      },
-    });
+    return data;
   }
 
-  findAllForAdminsDashboard(query: {
+  async findAllForAdminsDashboard(query: {
     searchByName?: string;
     sortByCapital?: 'asc' | 'desc';
     page?: number;
@@ -142,34 +69,98 @@ export class CompaniesService {
   }) {
     const { page, limit, searchByName, sortByCapital } = query;
     const skipItems = getSkippedItems(page, limit);
+    const orderBy = [
+      {
+        capital: sortByCapital,
+      },
+    ];
 
-    return this.databaseService.company.findMany({
-      orderBy: [
-        {
-          capital: sortByCapital,
+    const [count, data] = await Promise.all([
+      this.databaseService.company.count({
+        orderBy,
+        where: {
+          companyName: {
+            contains: searchByName,
+            mode: 'insensitive',
+          },
         },
-      ],
-      where: {
-        companyName: {
-          contains: searchByName,
-          mode: 'insensitive',
+      }),
+      this.databaseService.company.findMany({
+        orderBy,
+        where: {
+          companyName: {
+            contains: searchByName,
+            mode: 'insensitive',
+          },
         },
+        skip: skipItems,
+        take: limit,
+        select: {
+          companyName: true,
+          capital: true,
+        },
+      }),
+    ]);
+
+    const lastPage = Math.ceil(count / limit);
+
+    return {
+      data,
+      meta: {
+        count,
+        prev: page > 1 ? page - 1 : null,
+        next: page < lastPage ? page + 1 : null,
+        lastPage,
       },
-      skip: skipItems,
-      take: limit,
-      select: {
-        companyName: true,
-        capital: true,
-      },
-    });
+    };
   }
 
-  findAllForUsersDashboard(userId: number) {
-    return this.databaseService.company.findMany({
-      where: {
-        userId,
+  async findAllForUsersDashboard(
+    userId: number,
+    query: {
+      searchByName?: string;
+      page?: number;
+      limit?: number;
+    },
+  ) {
+    const { page, limit, searchByName } = query;
+    const skipItems = getSkippedItems(page, limit);
+
+    const [count, data] = await Promise.all([
+      this.databaseService.company.count({
+        where: {
+          userId,
+          companyName: {
+            contains: searchByName,
+            mode: 'insensitive',
+          },
+        },
+      }),
+
+      this.databaseService.company.findMany({
+        where: {
+          userId,
+        },
+        select: {
+          companyName: true,
+          prices: true,
+        },
+        skip: skipItems,
+        take: limit,
+      }),
+    ]);
+
+    const lastPage = Math.ceil(count / limit);
+
+    return {
+      data,
+      meta: {
+        count,
+        prev: page > 1 ? page - 1 : null,
+        next: page < lastPage ? page + 1 : null,
+        lastPage,
       },
-    });
+    };
   }
 
   findOne(id: number) {
@@ -193,11 +184,94 @@ export class CompaniesService {
     });
   }
 
-  remove(id: number) {
+  async remove(id: number) {
+    const company = await this.findOne(id);
+    if (!company) {
+      throw new NotFoundException('Current company not found');
+    }
+
     return this.databaseService.company.delete({
       where: {
         id,
       },
     });
+  }
+
+  async getPaginationData(
+    query: {
+      searchByName?: string;
+      searchByService?: string;
+      sortByCreatedDate?: 'asc' | 'desc';
+      sortByCapital?: 'asc' | 'desc';
+      page?: number;
+      limit?: number;
+    },
+    userId?: number,
+  ) {
+    const {
+      page,
+      limit,
+      searchByName,
+      searchByService,
+      sortByCapital,
+      sortByCreatedDate,
+    } = query;
+
+    const skipItems = getSkippedItems(page, limit);
+    const orderBy = [
+      {
+        createdDate: sortByCreatedDate,
+      },
+      {
+        capital: sortByCapital,
+      },
+    ];
+
+    const [count, data] = await Promise.all([
+      this.databaseService.company.count({
+        where: {
+          userId,
+          companyName: {
+            contains: searchByName,
+            mode: 'insensitive',
+          },
+          service: {
+            contains: searchByService,
+            mode: 'insensitive',
+          },
+        },
+      }),
+      this.databaseService.company.findMany({
+        orderBy,
+        skip: skipItems,
+        take: limit,
+        where: {
+          userId,
+          companyName: {
+            contains: searchByName,
+            mode: 'insensitive',
+          },
+          service: {
+            contains: searchByService,
+            mode: 'insensitive',
+          },
+        },
+        include: {
+          Location: true,
+          prices: true,
+        },
+      }),
+    ]);
+    const lastPage = Math.ceil(count / limit);
+
+    return {
+      data,
+      meta: {
+        count,
+        prev: page > 1 ? page - 1 : null,
+        next: page < lastPage ? page + 1 : null,
+        lastPage,
+      },
+    };
   }
 }
