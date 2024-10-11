@@ -1,4 +1,7 @@
 {
+  "dependencies": {
+    "@nestjs/mapped-types": "*"
+  },
   "name": "company-dashboard-app",
   "private": true,
   "scripts": {
