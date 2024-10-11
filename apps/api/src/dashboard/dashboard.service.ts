@@ -34,20 +34,23 @@ export class DashboardService {
     return this.companiesService.findAll(query);
   }
 
-  getCompaniesForDashBoard(
+  getCompaniesForAdminDashBoard(query: {
+    searchByName?: string;
+    sortByCapital?: 'asc' | 'desc';
+    page?: number;
+    limit?: number;
+  }) {
+    return this.companiesService.findAllForAdminsDashboard(query);
+  }
+
+  getCompaniesForUserDashboard(
     userId: number,
-    role: string,
     query: {
       searchByName?: string;
-      sortByCapital?: 'asc' | 'desc';
       page?: number;
       limit?: number;
     },
   ) {
-    if (role === 'USER') {
-      return this.companiesService.findAllForUsersDashboard(userId, query);
-    }
-
-    return this.companiesService.findAllForAdminsDashboard(query);
+    return this.companiesService.findAllForUsersDashboard(userId, query);
   }
 }

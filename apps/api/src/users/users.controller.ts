@@ -46,8 +46,12 @@ export class UsersController {
     @Query('perPage', new DefaultValuePipe(8), ParseIntPipe) perPage?: number,
     @Query('role') role?: Role,
   ) {
-    const users = await this.usersService.findAll(role, page, perPage);
-    return users.map((user) => new UserEntity(user));
+    const responseData = await this.usersService.findAll(role, page, perPage);
+
+    return {
+      ...responseData,
+      data: responseData.data.map((user) => new UserEntity(user)),
+    };
   }
 
   @Get(':id')

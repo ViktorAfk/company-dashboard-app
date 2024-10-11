@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { getSkippedItems } from 'src/common/decorators/get-skipped-items';
 import { DatabaseService } from 'src/database/database.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
@@ -184,7 +184,12 @@ export class CompaniesService {
     });
   }
 
-  remove(id: number) {
+  async remove(id: number) {
+    const company = await this.findOne(id);
+    if (!company) {
+      throw new NotFoundException('Current company not found');
+    }
+
     return this.databaseService.company.delete({
       where: {
         id,

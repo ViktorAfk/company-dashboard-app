@@ -1,13 +1,14 @@
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { Role } from '@prisma/client';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { GetCurrentUser } from 'src/common/decorators';
-import { ResponseEntity } from 'src/common/entity/response.entity';
-import { CompanyEntity } from 'src/companies/entities/company.entity';
+import { UserEntity } from 'src/users/entities/user.entity';
 import { DashboardService } from './dashboard.service';
 import { QueryCompanyAdminsDto } from './dto/query-dashboard-admins.dto';
+import { QueryDashBoardUserCompaniesDTO } from './dto/query-dashboard-company.dto';
 import { QueryUsersDTO } from './dto/query-users.dto';
+import { CompanyDashboardAdminEntity } from './entity/dashboard-companies.entity';
+import { DashBoardUserEntity } from './entity/dashboard-users.entity';
 
 @Controller('dashboard')
 @ApiTags('dashboard')
@@ -17,27 +18,41 @@ export class DashboardController {
   @UseGuards(JwtAuthGuard)
   @Get('companies')
   @ApiBearerAuth()
-  @ApiOkResponse({ type: ResponseEntity<CompanyEntity> })
-  getAllCompanies(
-    @Query() query: QueryCompanyAdminsDto,
-    @GetCurrentUser('userId') userId: number,
-    @GetCurrentUser('role') role: Role,
+  @ApiOkResponse({
+    description: 'A list of companies with pagination metadata',
+    type: CompanyDashboardAdminEntity,
+  })
+  getAllCompaniesForAdmins(@Query() query: QueryCompanyAdminsDto) {
+    return this.dashboardService.getCompaniesForAdminDashBoard(query);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('user/companies')
+  @ApiBearerAuth()
+  getAllCompaniesForUsers(
+    @GetCurrentUser('sub') userId: number,
+    @Query() query: QueryDashBoardUserCompaniesDTO,
   ) {
-    return this.dashboardService.getCompaniesForDashBoard(userId, role, query);
+    return this.dashboardService.getCompaniesForUserDashboard(userId, query);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('users')
   @ApiBearerAuth()
-  @ApiOkResponse({ type: CompanyEntity, isArray: true })
-  getAllUsers(@Query() query: QueryUsersDTO) {
-    return this.dashboardService.getAllUsers(query);
+  @ApiOkResponse({ type: DashBoardUserEntity })
+  async getAllUsers(@Query() query: QueryUsersDTO) {
+    const responseData = await this.dashboardService.getAllUsers(query);
+
+    return {
+      ...responseData,
+      data: responseData.data.map((user) => new UserEntity(user)),
+    };
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('admins')
   @ApiBearerAuth()
-  @ApiOkResponse({ type: CompanyEntity, isArray: true })
+  @ApiOkResponse({ type: DashBoardUserEntity })
   getAllAdmins(@Query() query: QueryUsersDTO) {
     return this.dashboardService.getAllAdmins(query);
   }

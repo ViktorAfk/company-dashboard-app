@@ -7,27 +7,27 @@ export class UserEntity implements User {
     Object.assign(this, partial);
   }
 
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   id: number;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'Escobar' })
   surname: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: '01-08-2024' })
   createdAt: Date;
 
-  @ApiProperty()
+  @ApiProperty({ example: '01-08-2024' })
   updatedAt: Date;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'Pablo' })
   name: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'pablo.col@gmail.com' })
   email: string;
 
   @Exclude()
   password: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'USER' })
   role: $Enums.Role;
 }

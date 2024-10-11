@@ -1,28 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class MetaData {
-  @ApiProperty()
+  @ApiProperty({ example: 20 })
   count: number;
 
-  @ApiProperty()
+  @ApiProperty({ example: 1, nullable: true })
   previous: number | null;
 
-  @ApiProperty()
+  @ApiProperty({ example: 2, nullable: true })
   next: number | null;
 
-  @ApiProperty()
+  @ApiProperty({ example: 2 })
   lastPage: number;
-}
-
-export class ResponseEntity<T> {
-  @ApiProperty({ isArray: true })
-  data: T[];
-
-  @ApiProperty()
-  meta: MetaData;
-
-  constructor(data: T[], meta: MetaData) {
-    this.data = data;
-    this.meta = meta;
-  }
 }

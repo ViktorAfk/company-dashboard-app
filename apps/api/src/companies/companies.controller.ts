@@ -70,7 +70,7 @@ export class CompaniesController {
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   @ApiBearerAuth()
-  @ApiOkResponse({ type: CompanyEntity, isArray: true })
+  @ApiOkResponse({ type: CompanyEntity })
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.companiesService.remove(id);
   }
