@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { GetCurrentUser } from 'src/common/decorators';
+import { GetCurrentUser, Public } from 'src/common/decorators';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
@@ -18,11 +18,14 @@ export class AuthController {
     private readonly userService: UsersService,
   ) {}
 
+  @Public()
   @Post('login')
   @ApiOkResponse({ type: AuthEntity })
   login(@Body() { email, password }: LoginDto) {
     return this.authService.login(email, password);
   }
+
+  @Public()
   @Post('signup')
   @ApiOkResponse({ type: UserEntity })
   registration(@Body() input: CreateUserDto) {

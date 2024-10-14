@@ -16,6 +16,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { Roles } from 'src/common/decorators';
 import { CreatePriceDto } from './dto/create-price.dto';
 import { UpdatePriceDto } from './dto/update-price.dto';
 import { PriceEntity } from './entities/price.entity';
@@ -27,21 +28,21 @@ export class PricesController {
   constructor(private readonly pricesService: PricesService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard)
+  @Roles('USER')
   @ApiBearerAuth()
   @ApiCreatedResponse({ type: PriceEntity })
   create(@Body() createPriceDto: CreatePriceDto[]) {
     return this.pricesService.createMany(createPriceDto);
   }
 
-  @Get()
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOkResponse({ type: PriceEntity, isArray: true })
-  findAll(companyId: string) {
-    return this.pricesService.findAll(+companyId);
-  }
+  // @Get('companies/:companyId')
+  // @ApiBearerAuth()
+  // @ApiOkResponse({ type: PriceEntity, isArray: true })
+  // findAll(@Param('') companyId: string) {
+  //   return this.pricesService.findAll(+companyId);
+  // }
 
+  @Roles('USER', 'ADMIN', 'SUPER_ADMIN')
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -50,8 +51,8 @@ export class PricesController {
     return this.pricesService.findOne(+id);
   }
 
+  @Roles('USER')
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOkResponse({ type: PriceEntity })
   update(
@@ -61,8 +62,8 @@ export class PricesController {
     return this.pricesService.update(id, updatePriceDto);
   }
 
+  @Roles('USER')
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOkResponse({ type: PriceEntity })
   remove(@Param('id', ParseIntPipe) id: number) {

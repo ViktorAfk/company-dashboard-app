@@ -1,7 +1,6 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { GetCurrentUser } from 'src/common/decorators';
+import { GetCurrentUser, Roles } from 'src/common/decorators';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { DashboardService } from './dashboard.service';
 import { QueryCompanyAdminsDto } from './dto/query-dashboard-admins.dto';
@@ -15,7 +14,7 @@ import { DashBoardUserEntity } from './entity/dashboard-users.entity';
 export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) {}
 
-  @UseGuards(JwtAuthGuard)
+  @Roles('ADMIN', 'SUPER_ADMIN')
   @Get('companies')
   @ApiBearerAuth()
   @ApiOkResponse({
@@ -26,7 +25,7 @@ export class DashboardController {
     return this.dashboardService.getCompaniesForAdminDashBoard(query);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Roles('USER')
   @Get('user/companies')
   @ApiBearerAuth()
   getAllCompaniesForUsers(
@@ -36,7 +35,7 @@ export class DashboardController {
     return this.dashboardService.getCompaniesForUserDashboard(userId, query);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Roles('ADMIN', 'SUPER_ADMIN')
   @Get('users')
   @ApiBearerAuth()
   @ApiOkResponse({ type: DashBoardUserEntity })
@@ -49,11 +48,16 @@ export class DashboardController {
     };
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Roles('SUPER_ADMIN')
   @Get('admins')
   @ApiBearerAuth()
   @ApiOkResponse({ type: DashBoardUserEntity })
-  getAllAdmins(@Query() query: QueryUsersDTO) {
-    return this.dashboardService.getAllAdmins(query);
+  async getAllAdmins(@Query() query: QueryUsersDTO) {
+    const responseData = await this.dashboardService.getAllAdmins(query);
+
+    return {
+      ...responseData,
+      data: responseData.data.map((user) => new UserEntity(user)),
+    };
   }
 }

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Role } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { getSkippedItems } from 'src/common/decorators/get-skipped-items';
@@ -59,6 +63,7 @@ export class UsersService {
         id,
       },
     });
+
     if (!user) {
       throw new NotFoundException(`User with ${id} doesn't found`);
     }
@@ -93,6 +98,29 @@ export class UsersService {
     });
   }
 
+  async updateAdminData(id: number, updateUserDto: UpdateUserDto) {
+    const user = await this.databaseService.user.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User with id:${id} doesn't found`);
+    }
+
+    if (user.role !== 'ADMIN') {
+      throw new UnauthorizedException('Can only update admin users');
+    }
+
+    return this.databaseService.user.update({
+      where: {
+        id,
+      },
+      data: updateUserDto,
+    });
+  }
+
   async remove(id: number) {
     const user = await this.databaseService.user.findUnique({
       where: {
@@ -107,6 +135,25 @@ export class UsersService {
     return this.databaseService.user.delete({
       where: {
         id,
+      },
+    });
+  }
+
+  async removeAdminData(adminId: number) {
+    const admin = await this.databaseService.user.findUnique({
+      where: {
+        id: adminId,
+        role: 'ADMIN',
+      },
+    });
+
+    if (!admin) {
+      throw new NotFoundException(`User with id:${adminId} doesn't found`);
+    }
+
+    return this.databaseService.user.delete({
+      where: {
+        id: adminId,
       },
     });
   }

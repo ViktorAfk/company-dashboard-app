@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
-import { APP_FILTER } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { AuthModule } from './auth/auth.module';
+import { RolesGuard } from './auth/guards/roles.guard';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { CompaniesModule } from './companies/companies.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { DatabaseModule } from './database/database.module';
@@ -23,6 +25,14 @@ import { UsersModule } from './users/users.module';
   ],
   controllers: [],
   providers: [
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
     {
       provide: APP_FILTER,
       useClass: PrismaClientExceptionFilter,
