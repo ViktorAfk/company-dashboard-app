@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  DefaultValuePipe,
   Delete,
   Get,
   Param,
@@ -19,6 +18,7 @@ import {
 } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { Roles } from 'src/common/decorators';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entity';
@@ -30,20 +30,19 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiCreatedResponse({ type: UserEntity })
   async create(@Body() createUserDto: CreateUserDto) {
     return new UserEntity(await this.usersService.create(createUserDto));
   }
 
+  @Roles('ADMIN', 'SUPER_ADMIN')
   @Get()
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOkResponse({ type: UserEntity, isArray: true })
   async findAll(
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page?: number,
-    @Query('perPage', new DefaultValuePipe(8), ParseIntPipe) perPage?: number,
+    @Query('page', ParseIntPipe) page?: number,
+    @Query('perPage', ParseIntPipe) perPage?: number,
     @Query('role') role?: Role,
   ) {
     const responseData = await this.usersService.findAll(role, page, perPage);
@@ -54,14 +53,15 @@ export class UsersController {
     };
   }
 
+  @Roles('USER', 'ADMIN', 'SUPER_ADMIN')
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOkResponse({ type: UserEntity })
   async findOne(@Param('id', ParseIntPipe) id: number) {
     return new UserEntity(await this.usersService.findOne(id));
   }
 
+  @Roles('USER')
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -73,11 +73,30 @@ export class UsersController {
     return new UserEntity(await this.usersService.update(id, updateUserDto));
   }
 
+  @Roles('SUPER_ADMIN')
+  @Patch('admins/:adminId')
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: UserEntity })
+  async updateAdmin(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return new UserEntity(await this.usersService.update(id, updateUserDto));
+  }
+
+  @Roles('USER')
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOkResponse({ type: UserEntity })
   async remove(@Param('id', ParseIntPipe) id: number) {
     return new UserEntity(await this.usersService.remove(id));
+  }
+
+  @Roles('SUPER_ADMIN')
+  @Delete('admins/:adminId')
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: UserEntity })
+  async removeAdmin(@Param('id', ParseIntPipe) id: number) {
+    return new UserEntity(await this.usersService.removeAdminData(id));
   }
 }

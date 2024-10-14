@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { Role } from '@prisma/client';
 import { getSkippedItems } from 'src/common/decorators/get-skipped-items';
 import { DatabaseService } from 'src/database/database.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
@@ -163,8 +168,8 @@ export class CompaniesService {
     };
   }
 
-  findOne(id: number) {
-    return this.databaseService.company.findUnique({
+  async findOne(id: number, role: Role, userId: number) {
+    const company = await this.databaseService.company.findUnique({
       where: {
         id,
       },
@@ -173,9 +178,31 @@ export class CompaniesService {
         prices: true,
       },
     });
+
+    if (!company) {
+      throw new NotFoundException('Current company not found');
+    }
+
+    if (role === 'USER' && company.userId !== userId) {
+      throw new ForbiddenException(
+        'User with role("User") has access only to his companies',
+      );
+    }
+
+    return company;
   }
 
-  update(id: number, updateCompanyDto: UpdateCompanyDto) {
+  async update(
+    id: number,
+    updateCompanyDto: UpdateCompanyDto,
+    role: Role,
+    userId: number,
+  ) {
+    const company = await this.findOne(id, role, userId);
+    if (!company) {
+      throw new NotFoundException('Current company not found');
+    }
+
     return this.databaseService.company.update({
       where: {
         id,
@@ -184,8 +211,8 @@ export class CompaniesService {
     });
   }
 
-  async remove(id: number) {
-    const company = await this.findOne(id);
+  async remove(id: number, role: Role, userId: number) {
+    const company = await this.findOne(id, role, userId);
     if (!company) {
       throw new NotFoundException('Current company not found');
     }
