@@ -1,4 +1,4 @@
-type Role = 'user' | 'admin' | 'super admin';
+export type Role = 'user' | 'admin' | 'super admin';
 
 type Location = {
   zip: number;
