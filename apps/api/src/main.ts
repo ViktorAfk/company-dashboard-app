@@ -2,10 +2,18 @@ import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { AppConfigService } from './config/app-config.service';
 import { PrismaClientExceptionFilter } from './prisma-client-exception/prisma-client-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const appConfig = app.get<AppConfigService>(AppConfigService);
+  const allowedOrigins = [appConfig.webUrl];
+  const isDevelopment = appConfig.env === 'development';
+
+  if (isDevelopment) {
+    allowedOrigins.push('http://localhost:5173');
+  }
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
 
@@ -22,6 +30,11 @@ async function bootstrap() {
 
   const { httpAdapter } = app.get(HttpAdapterHost);
   app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
+
+  app.enableCors({
+    credentials: true,
+    origin: allowedOrigins,
+  });
 
   await app.listen(3000);
 }
