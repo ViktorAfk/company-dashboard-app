@@ -4,12 +4,14 @@ import { AuthModule } from './auth/auth.module';
 import { RolesGuard } from './auth/guards/roles.guard';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { CompaniesModule } from './companies/companies.module';
+import { AppConfigModule } from './config/app-config.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { DatabaseModule } from './database/database.module';
 import { LocationsModule } from './locations/locations.module';
 import { PricesModule } from './prices/prices.module';
 import { PrismaClientExceptionFilter } from './prisma-client-exception/prisma-client-exception.filter';
 import { TokensModule } from './tokens/tokens.module';
+import { UploadModule } from './upload/upload.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -22,6 +24,8 @@ import { UsersModule } from './users/users.module';
     AuthModule,
     TokensModule,
     DashboardModule,
+    UploadModule,
+    AppConfigModule,
   ],
   controllers: [],
   providers: [
