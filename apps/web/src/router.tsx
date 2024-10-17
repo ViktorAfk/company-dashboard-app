@@ -1,6 +1,9 @@
 import { createBrowserRouter } from 'react-router-dom';
-import { App } from './App';
 import { Layout } from './components/Layout';
+import { CompaniesList } from './routes/CompaniesList';
+import { CreateCompany } from './routes/CreateCompany';
+import { Profile } from './routes/Profile';
+import { ResetPassword } from './routes/ResetPassword';
 import { AuthGuard } from './routes/auth/AuthGuard';
 import { SignIn } from './routes/auth/SignIn';
 import { SignUp } from './routes/auth/SignUp';
@@ -18,40 +21,49 @@ export const router = createBrowserRouter([
         element: <AuthGuard />,
         children: [
           {
-            path: '/',
-            element: <App />,
+            path: 'dashboard',
+            element: <Dashboard />,
             children: [
               {
-                path: 'dashboard',
-                element: <Dashboard />,
-                children: [
-                  {
-                    path: 'users',
-                    element: <Users />,
-                  },
-                  {
-                    path: 'companies',
-                    element: <Companies />,
-                  },
-                  {
-                    path: 'admins',
-                    element: <Admins />,
-                  },
-                ],
+                path: 'users',
+                element: <Users />,
+              },
+              {
+                path: 'companies',
+                element: <Companies />,
+              },
+              {
+                path: 'admins',
+                element: <Admins />,
               },
             ],
           },
+          {
+            path: 'companies-list',
+            element: <CompaniesList />,
+          },
+          {
+            path: 'profile',
+            element: <Profile />,
+          },
+          {
+            path: 'reset-password',
+            element: <ResetPassword />,
+          },
+          {
+            path: 'create-company',
+            element: <CreateCompany />,
+          },
         ],
       },
-
-      {
-        path: '/sign-in',
-        element: <SignIn />,
-      },
-      {
-        path: '/sign-up',
-        element: <SignUp />,
-      },
     ],
+  },
+  {
+    path: 'sign-in',
+    element: <SignIn />,
+  },
+  {
+    path: 'sign-up',
+    element: <SignUp />,
   },
 ]);

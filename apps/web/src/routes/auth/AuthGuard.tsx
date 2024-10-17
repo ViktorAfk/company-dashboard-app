@@ -1,14 +1,14 @@
 import { useAuthContext } from '@/hooks/auth-context';
-import React, { PropsWithChildren, useEffect } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import React, { PropsWithChildren } from 'react';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
 export const AuthGuard: React.FC<PropsWithChildren> = ({ children }) => {
   const { authData } = useAuthContext();
-  const navigate = useNavigate();
+  const location = useLocation();
 
   if (!authData) {
-    navigate('/sign-in', { replace: true });
+    return <Navigate to="/sign-in" state={{ from: location }} replace />;
   }
 
-  return <>{children}</>;
+  return children || <Outlet />;
 };
