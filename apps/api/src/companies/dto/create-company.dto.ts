@@ -10,9 +10,9 @@ export class CreateCompanyDto
   @IsString()
   companyName: string;
 
-  // @ApiProperty()
-  // @IsOptional()
-  // avatar: string;
+  @ApiProperty()
+  @IsOptional()
+  avatar: string;
 
   @IsNotEmpty()
   @ApiProperty()
