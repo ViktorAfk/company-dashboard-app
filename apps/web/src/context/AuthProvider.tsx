@@ -1,5 +1,4 @@
 import api from '@/api/http';
-import { useLocalStorage } from '@/hooks/use-local-sotrage';
 import { AuthResponseData } from '@/types/auth-type';
 
 import { refresh } from '@/api/auth/auth';

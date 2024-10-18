@@ -9,6 +9,7 @@ datasource db {
 
 model User {
   id        Int       @id @default(autoincrement())
+  avatar    String?
   name      String
   surname   String
   email     String    @unique
@@ -28,6 +29,7 @@ enum Role {
 
 model Company {
   id          Int       @id @default(autoincrement())
+  avatar      String?
   companyName String    @unique
   service     String
   description String

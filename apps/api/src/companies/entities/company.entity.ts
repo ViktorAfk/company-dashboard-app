@@ -9,6 +9,9 @@ export class CompanyEntity implements Company {
   companyName: string;
 
   @ApiProperty()
+  avatar: string | null;
+
+  @ApiProperty()
   service: string;
 
   @ApiProperty()

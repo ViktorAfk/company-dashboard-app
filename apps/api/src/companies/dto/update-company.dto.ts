@@ -8,6 +8,10 @@ export class UpdateCompanyDto {
 
   @ApiProperty()
   @IsOptional()
+  avatar: string;
+
+  @ApiProperty()
+  @IsOptional()
   service: string;
 
   @ApiProperty()
