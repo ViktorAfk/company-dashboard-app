@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { $Enums, User } from '@prisma/client';
 import { Exclude } from 'class-transformer';
+import { IsOptional } from 'class-validator';
 
 export class UserEntity implements User {
   constructor(partial: Partial<UserEntity>) {
@@ -30,4 +31,8 @@ export class UserEntity implements User {
 
   @ApiProperty({ example: 'USER' })
   role: $Enums.Role;
+
+  @IsOptional()
+  @ApiProperty({ example: 'http:your.image.com/image' })
+  avatar: string | null;
 }

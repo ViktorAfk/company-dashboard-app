@@ -14,6 +14,8 @@ const validationObject = z.object({
   AWS_SECRET_ACCESS_KEY: z.string(),
   AWS_S3_REGION: z.string(),
   AWS_LOGOS_BUCKET: z.string(),
+  JWT_SECRET: z.string(),
+  JWT_REFRESH_SECRET: z.string(),
 });
 
 @Injectable()
@@ -59,7 +61,12 @@ export class AppConfigService {
   get AwsSecretAccessKey(): string {
     return this.configService.get<string>('AWS_SECRET_ACCESS_KEY');
   }
-
+  get JwtSecret(): string {
+    return this.configService.get<string>('JWT_SECRET');
+  }
+  get JwtRefreshSecret(): string {
+    return this.configService.get<string>('JWT_REFRESH_SECRET');
+  }
   get saltRounds(): number {
     return Number(this.configService.get('SALT_ROUNDS'));
   }

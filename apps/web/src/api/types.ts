@@ -35,6 +35,7 @@ export type RegisterResponse = {
 
 export interface Company {
   id: number;
+  avatar: string | null;
   companyName: string;
   service: string;
   description: string;
@@ -69,6 +70,6 @@ interface Meta {
 }
 
 export type ResponseData<T> = {
-  data: T[];
+  data: T;
   meta: Meta;
 };

@@ -3,20 +3,15 @@ import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { GetCurrentUser, Public } from 'src/common/decorators';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UserEntity } from 'src/users/entities/user.entity';
-import { UsersService } from 'src/users/users.service';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { AuthEntity } from './entity/auth.entity';
-import { JwtAuthGuard } from './jwt-auth.guard';
 import { RefreshAuthGuard } from './refresh-auth.guard';
 
 @Controller('auth')
 @ApiTags('auth')
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly userService: UsersService,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Public()
   @Post('login')
@@ -32,7 +27,6 @@ export class AuthController {
     return this.authService.register(input);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('logout')
   @ApiOkResponse()
   @ApiBearerAuth()
@@ -40,6 +34,7 @@ export class AuthController {
     await this.authService.logout(userId);
   }
 
+  @Public()
   @UseGuards(RefreshAuthGuard)
   @Get('refresh')
   @ApiOkResponse()
@@ -48,6 +43,7 @@ export class AuthController {
     @GetCurrentUser('sub') userId: number,
     @GetCurrentUser('refreshToken') refreshToken: string,
   ) {
+    console.log('I am refresh route');
     return this.authService.refreshTokens(userId, refreshToken);
   }
 }

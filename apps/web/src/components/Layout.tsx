@@ -12,7 +12,7 @@ export const Layout: React.FC = () => {
       <aside className="basis-32 h-dvh bg-primary pt-7 pb-9 px-2">
         <SideBar />
       </aside>
-      <div className="flex-1">
+      <div className="flex-1 h-dvh overflow-y-auto max-w-screen-xl">
         {!authData && <App />}
         <Outlet />
       </div>

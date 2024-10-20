@@ -2,6 +2,8 @@ import api from '@/api/http';
 import { AuthResponseData } from '@/types/auth-type';
 
 import { refresh } from '@/api/auth/auth';
+import { useLocalStorage } from '@/hooks/use-local-sotrage';
+import { ACCESS_TOKEN, REFRESH_TOKEN } from '@/utils/constants';
 import { InternalAxiosRequestConfig } from 'axios';
 import {
   PropsWithChildren,
@@ -15,9 +17,11 @@ import {
 interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
 }
+
+type AuthUserData = Pick<AuthResponseData, 'email' | 'fullName'>;
 type AuthContextProps = {
-  authData: AuthResponseData | null | undefined;
-  signInUser: (logData: AuthResponseData) => void;
+  authData: AuthUserData | null | undefined;
+  signInUser: (logData: AuthUserData) => void;
   logoutUser: () => void;
 };
 
@@ -28,10 +32,12 @@ export const AuthContext = createContext<AuthContextProps>({
 });
 
 export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
-  const [authData, setAuth] = useState<AuthResponseData | null | undefined>();
-  const signInUser = useCallback((logData: AuthResponseData) => {
+  const [authData, setAuth] = useState<AuthUserData | null | undefined>();
+  const signInUser = useCallback((logData: AuthUserData) => {
     setAuth(logData);
   }, []);
+
+  const { getItem, setItem } = useLocalStorage();
 
   const logoutUser = useCallback(() => {
     setAuth(null);
@@ -43,11 +49,12 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
   );
 
   useLayoutEffect(() => {
+    const access_token = getItem(ACCESS_TOKEN);
     const authInterceptor = api.interceptors.request.use(
       (config: CustomAxiosRequestConfig) => {
         config.headers.Authorization =
-          !config._retry && authData?.accessToken
-            ? `Bearer ${authData.accessToken}`
+          !config._retry && access_token
+            ? `Bearer ${access_token}`
             : config.headers.Authorization;
 
         return config;
@@ -57,24 +64,22 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
     return () => {
       api.interceptors.request.eject(authInterceptor);
     };
-  }, [authData?.accessToken]);
+  }, [getItem]);
 
   useLayoutEffect(() => {
+    const refresh_token = getItem(REFRESH_TOKEN);
+    console.log(refresh_token);
     const refreshInterceptor = api.interceptors.response.use(
       (response) => response,
       async (error) => {
         const originalRequest = error.config;
-        if (error.response.status === 403 && authData?.refreshToken) {
+        if (error.response.status === 401 && refresh_token) {
           try {
-            const response = await refresh({
-              refreshToken: authData.refreshToken,
-            });
-            setAuth({
-              ...authData,
-              accessToken: response.data.accessToken,
-              refreshToken: response.data.refreshToken,
-            });
+            console.log('I am alive');
+            const response = await refresh(refresh_token);
 
+            setItem(REFRESH_TOKEN, response.data.refreshToken);
+            setItem(ACCESS_TOKEN, response.data.accessToken);
             originalRequest.headers.Authorization = `Bearer ${response.data.accessToken}`;
 
             originalRequest._retry = true;
@@ -82,6 +87,7 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
             return api(originalRequest);
           } catch {
             setAuth(null);
+            console.log('waisted');
           }
           return Promise.reject(error);
         }
@@ -90,7 +96,7 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
     return () => {
       api.interceptors.response.eject(refreshInterceptor);
     };
-  }, []);
+  }, [getItem, setItem]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

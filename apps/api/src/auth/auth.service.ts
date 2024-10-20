@@ -8,11 +8,9 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { Role } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import { AppConfigService } from 'src/config/app-config.service';
 import { TokensService } from 'src/tokens/tokens.service';
 import { UsersService } from 'src/users/users.service';
-
-export const jwtSecret = process.env.JWT_SECRET;
-export const jwtRefreshSecret = process.env.JWT_REFRESH_SECRET;
 
 @Injectable()
 export class AuthService {
@@ -20,14 +18,15 @@ export class AuthService {
     private readonly userService: UsersService,
     private readonly jwtService: JwtService,
     private readonly tokensService: TokensService,
+    private readonly appConfigService: AppConfigService,
   ) {}
 
   async generateAccessToken(userId: number, email: string, role: Role) {
     const payload = { sub: userId, email, role };
 
     return this.jwtService.sign(payload, {
-      expiresIn: 60 * 15 * 1000,
-      secret: jwtSecret,
+      expiresIn: '15m',
+      secret: this.appConfigService.JwtSecret,
     });
   }
 
@@ -36,7 +35,7 @@ export class AuthService {
 
     return this.jwtService.sign(payload, {
       expiresIn: '1d',
-      secret: jwtRefreshSecret,
+      secret: this.appConfigService.JwtRefreshSecret,
     });
   }
 
@@ -90,7 +89,11 @@ export class AuthService {
     if (isUserExists) {
       throw new BadRequestException('User already exists');
     }
-    return this.userService.create(input);
+    const newUser = {
+      ...input,
+      avatar: null,
+    };
+    return this.userService.create(newUser);
   }
 
   async logout(userId: number) {
