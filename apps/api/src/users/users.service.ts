@@ -6,19 +6,20 @@ import {
 import { Role } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { getSkippedItems } from 'src/common/decorators/get-skipped-items';
+import { AppConfigService } from 'src/config/app-config.service';
 import { DatabaseService } from 'src/database/database.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
-const salt = process.env.SALT_ROUNDS;
 @Injectable()
 export class UsersService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly appConfigService: AppConfigService,
+  ) {}
   async create(createUserDto: CreateUserDto) {
-    const hashedPassword = await bcrypt.hash(
-      createUserDto.password,
-      Number(salt),
-    );
+    const SALT = this.appConfigService.saltRounds;
+    const hashedPassword = await bcrypt.hash(createUserDto.password, SALT);
 
     return this.databaseService.user.create({
       data: { ...createUserDto, password: hashedPassword },

@@ -2,18 +2,21 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { AppConfigService } from 'src/config/app-config.service';
 import { TokensService } from 'src/tokens/tokens.service';
 
-const jwtRefreshSecret = process.env.JWT_REFRESH_SECRET;
 @Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(
   Strategy,
   'jwt-refresh',
 ) {
-  constructor(private readonly tokenService: TokensService) {
+  constructor(
+    private readonly tokenService: TokensService,
+    private readonly appConfigService: AppConfigService,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: jwtRefreshSecret,
+      secretOrKey: appConfigService.JwtRefreshSecret,
       passReqToCallback: true,
     });
   }

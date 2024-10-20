@@ -35,5 +35,5 @@ export class QueryDto {
   @IsInt()
   @Min(4)
   @Type(() => Number)
-  limit?: number = 8;
+  limit?: number = 6;
 }

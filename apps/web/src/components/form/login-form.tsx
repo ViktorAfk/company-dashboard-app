@@ -1,6 +1,8 @@
 import { useSignInUser } from '@/api/auth/auth-query';
 import { useAuthContext } from '@/hooks/auth-context';
+import { useLocalStorage } from '@/hooks/use-local-sotrage';
 import { toast } from '@/hooks/use-toast';
+import { ACCESS_TOKEN, REFRESH_TOKEN } from '@/utils/constants';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
@@ -15,6 +17,7 @@ type LoginFormFields = yup.InferType<typeof loginSchema>;
 export const LoginForm: React.FC = () => {
   const { signInUser } = useAuthContext();
   const { mutateAsync, error: authError } = useSignInUser();
+  const { setItem } = useLocalStorage();
   const navigate = useNavigate();
   const methods = useForm<LoginFormFields>({
     defaultValues: {
@@ -27,7 +30,17 @@ export const LoginForm: React.FC = () => {
   const onSubmit = async (formData: LoginFormFields) => {
     try {
       const response = await mutateAsync(formData);
-      signInUser(response.data);
+      console.log({
+        refresh: response.data.refreshToken,
+        access: response.data.accessToken,
+      });
+      setItem(ACCESS_TOKEN, response.data.accessToken);
+      setItem(REFRESH_TOKEN, response.data.refreshToken);
+
+      signInUser({
+        fullName: response.data.fullName,
+        email: response.data.email,
+      });
       methods.reset();
       navigate('/');
     } catch (error) {
