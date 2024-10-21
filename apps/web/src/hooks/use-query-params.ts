@@ -1,10 +1,14 @@
-import { useMemo } from 'react';
+import { SearchParamsType } from '@/types/query-types';
+import { SearchParams, getSearchWith } from '@/utils/params-utils';
+import { useCallback, useMemo } from 'react';
 import { useLocation, useSearchParams } from 'react-router-dom';
+import { useDebouncedCallback } from 'use-debounce';
 
 export const useQueryParams = () => {
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
-  const allQueryParams = useMemo(() => {
+
+  const allQueryParams: SearchParamsType = useMemo(() => {
     return Object.fromEntries(searchParams);
   }, [searchParams]);
 
@@ -13,22 +17,29 @@ export const useQueryParams = () => {
     return params.get(key) || '';
   };
 
-  const setQueryParam = (key: string, value: string) => {
-    const params = new URLSearchParams(location.search);
-    params.set(key, value.toString());
-    setSearchParams(params.toString());
-  };
+  const setQueryParam = useCallback(
+    (params: SearchParams) => {
+      const search = getSearchWith(searchParams, params);
 
-  const removeQueryParamByKey = (key: string) => {
-    const params = new URLSearchParams(location.search);
-    params.delete(key);
-    setSearchParams(params.toString());
-  };
+      setSearchParams(search);
+    },
+    [searchParams, setSearchParams],
+  );
+
+  const debounced = useDebouncedCallback(
+    (
+      event: React.ChangeEvent<HTMLInputElement>,
+      key: keyof Pick<SearchParamsType, 'searchByName' | 'searchByService'>,
+    ) => {
+      setQueryParam({ [key]: event.target.value || null });
+    },
+    500,
+  );
 
   return {
     allQueryParams,
     getQueryParamByKey,
     setQueryParam,
-    removeQueryParamByKey,
+    debounced,
   };
 };

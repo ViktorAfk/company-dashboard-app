@@ -65,8 +65,8 @@ export type CreateCompanyData = Pick<
 interface Meta {
   count: number;
   lastPage: number;
-  previous: number;
-  next: number;
+  prev: number | null;
+  next: number | null;
 }
 
 export type ResponseData<T> = {

@@ -15,13 +15,13 @@ export class QueryDto {
 
   @ApiProperty()
   @IsOptional()
-  @IsEnum(['asc', 'desc'])
-  sortByCreatedDate?: 'asc' | 'desc';
+  @IsEnum(['createdDate', 'capital'])
+  sort?: 'createdDate' | 'capital';
 
   @ApiProperty()
   @IsOptional()
   @IsEnum(['asc', 'desc'])
-  sortByCapital?: 'asc' | 'desc';
+  order?: 'asc' | 'desc';
 
   @ApiProperty()
   @IsOptional()

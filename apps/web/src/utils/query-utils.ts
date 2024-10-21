@@ -1,8 +1,26 @@
 import { SortType } from '@/types/query-types';
 
 export const sortBySelectValues: SortType[] = [
-  { id: 1, sortValue: 'name', sortName: 'Name' },
-  { id: 2, sortValue: 'createdDate', sortName: 'Created date' },
+  {
+    id: 1,
+    sortValue: { sort: 'capital', order: 'asc' },
+    sortName: 'Capital up',
+  },
+  {
+    id: 2,
+    sortValue: { sort: 'capital', order: 'desc' },
+    sortName: 'Capital down',
+  },
+  {
+    id: 3,
+    sortValue: { sort: 'createdDate', order: 'asc' },
+    sortName: 'Created date up',
+  },
+  {
+    id: 4,
+    sortValue: { sort: 'createdDate', order: 'desc' },
+    sortName: 'Created date down',
+  },
 ];
 
 export const selectLimits: SortType[] = [

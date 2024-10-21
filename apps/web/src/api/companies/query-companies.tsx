@@ -1,4 +1,10 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { SearchParamsType } from '@/types/query-types';
+import {
+  queryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import {
   addCompany,
   deleteCompany,
@@ -7,12 +13,42 @@ import {
   updateCompanyData,
 } from './companies';
 
-export const useCompaniesListQuery = () => {
-  return useQuery({
-    queryKey: ['companies'],
-    queryFn: getCompaniesList,
+export const companiesListQuery = ({
+  limit,
+  page,
+  searchByName,
+  sort,
+  order,
+  searchByService,
+}: SearchParamsType) =>
+  queryOptions({
+    queryKey: [
+      'companies',
+      page || '',
+      searchByName || '',
+      order || '',
+      limit || '',
+      searchByService || '',
+      sort || '',
+    ],
+    queryFn: async () =>
+      getCompaniesList({
+        page,
+        searchByName,
+        order,
+        limit,
+        searchByService,
+        sort,
+      }),
   });
-};
+
+// export const useCompaniesListQuery = (params: SearchParamsType) => {
+//   const { limit, capital, name, page } = params;
+//   return useQuery({
+//     queryKey: ['companies', limit, capital, name, page],
+//     queryFn: () => getCompaniesList(params),
+//   });
+// };
 
 export const useGetCompanyQuery = (companyId: number) => {
   return useQuery({

@@ -31,6 +31,7 @@ export interface Company {
   companyName: string;
   service: string;
   description: string;
-  createdAt: string;
+  createdDate: string;
   location: Location;
+  capital: number;
 }
