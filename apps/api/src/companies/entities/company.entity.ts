@@ -21,7 +21,7 @@ export class CompanyEntity implements Company {
   capital: number;
 
   @ApiProperty()
-  createdDate: string;
+  createdDate: Date;
 
   @ApiProperty()
   userId: number;

@@ -68,14 +68,13 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
   useLayoutEffect(() => {
     const refresh_token = getItem(REFRESH_TOKEN);
-    console.log(refresh_token);
+
     const refreshInterceptor = api.interceptors.response.use(
       (response) => response,
       async (error) => {
         const originalRequest = error.config;
         if (error.response.status === 401 && refresh_token) {
           try {
-            console.log('I am alive');
             const response = await refresh(refresh_token);
 
             setItem(REFRESH_TOKEN, response.data.refreshToken);
@@ -87,7 +86,6 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
             return api(originalRequest);
           } catch {
             setAuth(null);
-            console.log('waisted');
           }
           return Promise.reject(error);
         }

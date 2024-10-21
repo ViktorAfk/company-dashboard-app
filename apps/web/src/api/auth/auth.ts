@@ -36,7 +36,6 @@ export const registerUser = async (registerParams: RegisterParams) => {
       AUTH_REG_LOGIN,
       registerParams,
     );
-    console.log(response);
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -71,7 +70,6 @@ export const refresh = async (
   AxiosResponse<Pick<AuthResponseData, 'accessToken' | 'refreshToken'>>
 > => {
   try {
-    console.log('Refresh', refreshToken);
     const response = axios.get(`${BASE_URL}${AUTH_REFRESH}`, {
       headers: {
         Authorization: `Bearer ${refreshToken}`,

@@ -8,11 +8,11 @@ export const Layout: React.FC = () => {
   const { authData } = useAuthContext();
 
   return (
-    <main className="flex">
+    <main className="flex bg-secondary">
       <aside className="basis-32 h-dvh bg-primary pt-7 pb-9 px-2">
         <SideBar />
       </aside>
-      <div className="flex-1 h-dvh overflow-y-auto max-w-screen-xl">
+      <div className="flex-1 h-dvh overflow-y-auto max-w-screen-xl bg-secondary">
         {!authData && <App />}
         <Outlet />
       </div>

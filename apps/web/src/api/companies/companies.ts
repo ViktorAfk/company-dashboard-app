@@ -1,12 +1,15 @@
+import { SearchParamsType } from '@/types/query-types';
 import axios from 'axios';
 import api from '../http';
 import { Company, CreateCompanyData, ResponseData } from '../types';
 
 const COMPANIES_URL = 'companies';
 
-export const getCompaniesList = async () => {
+export const getCompaniesList = async (params?: SearchParamsType) => {
   try {
-    const response = await api.get<ResponseData<Company[]>>(COMPANIES_URL);
+    const response = await api.get<ResponseData<Company[]>>(COMPANIES_URL, {
+      params,
+    });
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {

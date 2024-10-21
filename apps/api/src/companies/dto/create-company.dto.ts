@@ -30,8 +30,7 @@ export class CreateCompanyDto
 
   @IsNotEmpty()
   @ApiProperty()
-  @IsString()
-  createdDate: string;
+  createdDate: Date;
 
   @IsNotEmpty()
   @ApiProperty()

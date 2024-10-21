@@ -34,7 +34,7 @@ model Company {
   service     String
   description String
   capital     Float
-  createdDate String
+  createdDate DateTime  @default(now())
   Location    Location?
   user        User      @relation(fields: [userId], references: [id])
   userId      Int

@@ -16,7 +16,7 @@ export const links: LinkItem[] = [
   {
     id: 2,
     label: 'Companies list',
-    url: '/companies-list',
+    url: '/companies',
     icon: <CompaniesListIcon />,
   },
   {

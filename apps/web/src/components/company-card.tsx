@@ -19,9 +19,9 @@ type CompanyProps = {
 export const CompanyCard: React.FC<CompanyProps> = ({ company }) => {
   const { companyName, avatar, service, description, createdDate, id } =
     company;
-  console.log(avatar);
+
   return (
-    <Link to={`companies/${id}`}>
+    <Link to={`${id}`}>
       <Card>
         <CardHeader className="flex flex-row justify-between">
           <Avatar>

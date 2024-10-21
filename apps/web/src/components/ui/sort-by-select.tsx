@@ -9,16 +9,31 @@ import {
 
 type Props = {
   sortValues: SortType[];
+  placeholderValue: string;
+  setSortValue: (value: string) => void;
 };
-export const SortBySelect: React.FC<Props> = ({ sortValues }) => {
+export const SortBySelect: React.FC<Props> = ({
+  sortValues,
+  setSortValue,
+  placeholderValue,
+}) => {
   return (
-    <Select>
+    <Select onValueChange={setSortValue}>
       <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder="Sort by" />
+        <SelectValue placeholder={placeholderValue} />
       </SelectTrigger>
+
       <SelectContent>
+        <SelectItem value="none">None</SelectItem>
         {sortValues.map(({ id, sortName, sortValue }) => (
-          <SelectItem key={id} value={sortValue}>
+          <SelectItem
+            key={id}
+            value={
+              typeof sortValue === 'object'
+                ? `${sortValue.sort}_${sortValue.order}`
+                : sortValue
+            }
+          >
             {sortName}
           </SelectItem>
         ))}

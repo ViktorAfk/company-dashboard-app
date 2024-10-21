@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Role } from '@prisma/client';
+import { Company, Role } from '@prisma/client';
 import { getSkippedItems } from 'src/common/decorators/get-skipped-items';
 import { DatabaseService } from 'src/database/database.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
@@ -42,8 +42,8 @@ export class CompaniesService {
     query: {
       searchByName?: string;
       searchByService?: string;
-      sortByCreatedDate?: 'asc' | 'desc';
-      sortByCapital?: 'asc' | 'desc';
+      sort?: keyof Pick<Company, 'createdDate' | 'capital'>;
+      order?: 'asc' | 'desc';
       page?: number;
       limit?: number;
     },
@@ -56,8 +56,8 @@ export class CompaniesService {
   async findAll(query: {
     searchByName?: string;
     searchByService?: string;
-    sortByCreatedDate?: 'asc' | 'desc';
-    sortByCapital?: 'asc' | 'desc';
+    sort?: keyof Pick<Company, 'createdDate' | 'capital'>;
+    order?: 'asc' | 'desc';
     page?: number;
     limit?: number;
   }) {
@@ -67,16 +67,17 @@ export class CompaniesService {
   }
 
   async findAllForAdminsDashboard(query: {
+    sort?: keyof Pick<Company, 'createdDate' | 'capital'>;
+    order?: 'asc' | 'desc';
     searchByName?: string;
-    sortByCapital?: 'asc' | 'desc';
     page?: number;
     limit?: number;
   }) {
-    const { page, limit, searchByName, sortByCapital } = query;
+    const { page, limit, order, sort, searchByName } = query;
     const skipItems = getSkippedItems(page, limit);
     const orderBy = [
       {
-        capital: sortByCapital,
+        [order]: sort,
       },
     ];
 
@@ -228,32 +229,22 @@ export class CompaniesService {
     query: {
       searchByName?: string;
       searchByService?: string;
-      sortByCreatedDate?: 'asc' | 'desc';
-      sortByCapital?: 'asc' | 'desc';
+      sort?: keyof Pick<Company, 'createdDate' | 'capital'>;
+      order?: 'asc' | 'desc';
       page?: number;
       limit?: number;
     },
     userId?: number,
   ) {
-    const {
-      page,
-      limit,
-      searchByName,
-      searchByService,
-      sortByCapital,
-      sortByCreatedDate,
-    } = query;
+    const { page, limit, searchByName, searchByService, order, sort } = query;
 
     const skipItems = getSkippedItems(page, limit);
     const orderBy = [
       {
-        createdDate: sortByCreatedDate,
-      },
-      {
-        capital: sortByCapital,
+        [sort]: order,
       },
     ];
-
+    console.log(orderBy);
     const [count, data] = await Promise.all([
       this.databaseService.company.count({
         where: {

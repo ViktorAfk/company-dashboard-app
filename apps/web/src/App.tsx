@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 
 export function App() {
   return (
-    <section className="flex justify-center items-center h-dvh bg-secondary">
+    <section className="flex justify-center items-center h-dvh">
       <div className="flex flex-col gap-16 md:flex-row">
         <Link
           to="/sign-in"
