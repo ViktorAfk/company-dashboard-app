@@ -35,7 +35,7 @@ model Company {
   description String
   capital     Float
   createdDate DateTime  @default(now())
-  Location    Location?
+  location    Location?
   user        User      @relation(fields: [userId], references: [id])
   userId      Int
   prices      Price[]
