@@ -4,7 +4,7 @@ import './index.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Layout } from './components/Layout.tsx';
-import { loader as companiesLoader } from './components/companies.tsx';
+// import { loader as companiesLoader } from './components/companies.tsx';
 import { AuthProvider } from './context/AuthProvider.tsx';
 import { CreateCompany } from './routes/CreateCompany.tsx';
 import { ErrorPage } from './routes/ErrorPage.tsx';
@@ -23,10 +23,14 @@ import { Users } from './routes/dashboard/users/Users.tsx';
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 10,
+      staleTime: 1000 * 60 * 2,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      retry: 1,
     },
   },
 });
+
 const router = createBrowserRouter([
   {
     element: <Layout />,
@@ -57,7 +61,7 @@ const router = createBrowserRouter([
           {
             path: 'companies',
             element: <CompaniesList />,
-            loader: companiesLoader(queryClient),
+            // loader: companiesLoader(queryClient),
           },
           {
             path: 'companies/:companyId',

@@ -40,7 +40,7 @@ export interface Company {
   service: string;
   description: string;
   capital: number;
-  createdDate: string;
+  createdDate: Date;
   userId: number;
   location: Location;
   prices: Price[];
@@ -54,12 +54,10 @@ export type CreateCompanyData = Pick<
   | 'service'
   | 'description'
   | 'capital'
-  | 'createdDate'
   | 'userId'
+  | 'createdDate'
 > & {
   location: Omit<Location, 'id'>;
-} & {
-  prices: Omit<Price, 'id'>[];
 };
 
 interface Meta {

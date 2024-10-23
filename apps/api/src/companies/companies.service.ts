@@ -14,7 +14,7 @@ export class CompaniesService {
   constructor(private readonly databaseService: DatabaseService) {}
 
   async create(createCompanyDto: CreateCompanyDto) {
-    const { location, prices, ...companyData } = createCompanyDto;
+    const { location, ...companyData } = createCompanyDto;
 
     return this.databaseService.company.create({
       data: {
@@ -22,11 +22,6 @@ export class CompaniesService {
         Location: {
           create: {
             ...location,
-          },
-        },
-        prices: {
-          createMany: {
-            data: prices,
           },
         },
       },

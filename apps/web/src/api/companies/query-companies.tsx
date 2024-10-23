@@ -42,15 +42,8 @@ export const companiesListQuery = ({
       }),
   });
 
-// export const useCompaniesListQuery = (params: SearchParamsType) => {
-//   const { limit, capital, name, page } = params;
-//   return useQuery({
-//     queryKey: ['companies', limit, capital, name, page],
-//     queryFn: () => getCompaniesList(params),
-//   });
-// };
-
 export const useGetCompanyQuery = (companyId: number) => {
+  console.log(companyId);
   return useQuery({
     queryKey: ['company', companyId],
     queryFn: () => getCompany(companyId),

@@ -15,8 +15,8 @@ import { loginSchema } from './validations';
 type LoginFormFields = yup.InferType<typeof loginSchema>;
 
 export const LoginForm: React.FC = () => {
-  const { signInUser } = useAuthContext();
   const { mutateAsync, error: authError } = useSignInUser();
+  const { signInUser } = useAuthContext();
   const { setItem } = useLocalStorage();
   const navigate = useNavigate();
   const methods = useForm<LoginFormFields>({
@@ -30,17 +30,14 @@ export const LoginForm: React.FC = () => {
   const onSubmit = async (formData: LoginFormFields) => {
     try {
       const response = await mutateAsync(formData);
-      console.log({
-        refresh: response.data.refreshToken,
-        access: response.data.accessToken,
-      });
+
       setItem(ACCESS_TOKEN, response.data.accessToken);
       setItem(REFRESH_TOKEN, response.data.refreshToken);
-
       signInUser({
         fullName: response.data.fullName,
-        email: response.data.email,
+        userId: response.data.userId,
       });
+
       methods.reset();
       navigate('/');
     } catch (error) {
@@ -49,7 +46,7 @@ export const LoginForm: React.FC = () => {
         title: 'Sign in failed',
         description: authError?.message,
       });
-      throw new Error(`Failed to login user: ${error}`);
+      throw new Error(`Failed to login user: ${JSON.stringify(error)}`);
     }
   };
 

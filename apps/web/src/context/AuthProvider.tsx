@@ -1,8 +1,7 @@
-import api from '@/api/http';
-import { AuthResponseData } from '@/types/auth-type';
-
 import { refresh } from '@/api/auth/auth';
+import api from '@/api/http';
 import { useLocalStorage } from '@/hooks/use-local-sotrage';
+import { AuthResponseData } from '@/types/auth-type';
 import { ACCESS_TOKEN, REFRESH_TOKEN } from '@/utils/constants';
 import { InternalAxiosRequestConfig } from 'axios';
 import {
@@ -18,33 +17,33 @@ interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
 }
 
-type AuthUserData = Pick<AuthResponseData, 'email' | 'fullName'>;
+type AuthUserData = Pick<AuthResponseData, 'userId' | 'fullName'>;
+
 type AuthContextProps = {
-  authData: AuthUserData | null | undefined;
+  authData: Pick<AuthResponseData, 'userId' | 'fullName'> | null | undefined;
   signInUser: (logData: AuthUserData) => void;
   logoutUser: () => void;
 };
 
 export const AuthContext = createContext<AuthContextProps>({
-  authData: null,
   signInUser: () => {},
+  authData: null,
   logoutUser: () => {},
 });
 
 export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
-  const [authData, setAuth] = useState<AuthUserData | null | undefined>();
+  const [authData, setAuthData] = useState<AuthUserData | null | undefined>();
+  const { setItem, getItem } = useLocalStorage();
   const signInUser = useCallback((logData: AuthUserData) => {
-    setAuth(logData);
+    setAuthData(logData);
   }, []);
 
-  const { getItem, setItem } = useLocalStorage();
-
   const logoutUser = useCallback(() => {
-    setAuth(null);
+    setAuthData(null);
   }, []);
 
   const value = useMemo(
-    () => ({ authData, signInUser, logoutUser }),
+    () => ({ authData, logoutUser, signInUser }),
     [authData, signInUser, logoutUser],
   );
 
@@ -85,7 +84,7 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
             return api(originalRequest);
           } catch {
-            setAuth(null);
+            setAuthData(null);
           }
           return Promise.reject(error);
         }
