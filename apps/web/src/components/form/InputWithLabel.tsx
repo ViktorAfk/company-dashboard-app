@@ -1,4 +1,4 @@
-import { FieldValues, useFormContext } from 'react-hook-form';
+import { FieldValues, Path, useFormContext } from 'react-hook-form';
 
 import {
   FormControl,
@@ -8,13 +8,15 @@ import {
   FormMessage,
 } from '../ui/form';
 import { Input } from '../ui/input';
+import { Textarea } from '../ui/textarea';
 
 type Props<T extends FieldValues> = {
   labelName: string;
-  fieldName: keyof T & string;
+  fieldName: Path<T>;
   associatedElement: string;
   placeHolder: string;
-  inputType: React.HTMLInputTypeAttribute;
+  inputType?: React.HTMLInputTypeAttribute;
+  isTextArea?: boolean;
 };
 
 export const InputWithLabel = <T extends FieldValues>({
@@ -22,7 +24,8 @@ export const InputWithLabel = <T extends FieldValues>({
   fieldName,
   associatedElement,
   placeHolder,
-  inputType,
+  inputType = 'text',
+  isTextArea = false,
 }: Props<T>) => {
   const { control } = useFormContext();
   return (
@@ -33,12 +36,20 @@ export const InputWithLabel = <T extends FieldValues>({
         <FormItem>
           <FormLabel htmlFor={associatedElement}>{labelName}</FormLabel>
           <FormControl>
-            <Input
-              type={inputType}
-              className="max-w-screen-sm"
-              placeholder={placeHolder}
-              {...field}
-            />
+            {isTextArea ? (
+              <Textarea
+                className="max-w-screen-sm"
+                placeholder={placeHolder}
+                {...field}
+              />
+            ) : (
+              <Input
+                type={inputType}
+                className="max-w-screen-sm"
+                placeholder={placeHolder}
+                {...field}
+              />
+            )}
           </FormControl>
           <FormMessage className="w-80" />
         </FormItem>

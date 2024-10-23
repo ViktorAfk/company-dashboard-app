@@ -1,10 +1,11 @@
 import { SearchParamsType } from '@/types/query-types';
 import axios from 'axios';
 import api from '../http';
+import { DataRepository } from '../repositories/axios-repository';
 import { Company, CreateCompanyData, ResponseData } from '../types';
 
 const COMPANIES_URL = 'companies';
-
+const { getData } = DataRepository;
 export const getCompaniesList = async (params?: SearchParamsType) => {
   try {
     const response = await api.get<ResponseData<Company[]>>(COMPANIES_URL, {
@@ -24,10 +25,7 @@ export const getCompaniesList = async (params?: SearchParamsType) => {
 
 export const addCompany = async (createData: CreateCompanyData) => {
   try {
-    const response = await api.post<ResponseData<Company>>(
-      COMPANIES_URL,
-      createData,
-    );
+    const response = await api.post<Company>(COMPANIES_URL, createData);
 
     return response.data;
   } catch (error) {
@@ -43,7 +41,8 @@ export const addCompany = async (createData: CreateCompanyData) => {
 
 export const getCompany = async (companyId: number) => {
   try {
-    const response = await api.get<Company>(`${COMPANIES_URL}/${companyId}`);
+    const response = await getData<Company>(`${COMPANIES_URL}/${companyId}`);
+
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {

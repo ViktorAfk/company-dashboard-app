@@ -19,11 +19,7 @@ export interface User {
   surname: string;
   email: string;
   role: Role;
-  password: string;
-  telephoneNumber: string;
-  logoUrl: string;
-  prices: Price[];
-  userId: number;
+  avatar?: string | null;
 }
 
 export interface Company {

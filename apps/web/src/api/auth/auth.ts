@@ -9,12 +9,12 @@ const AUTH_REG_LOGIN = 'auth/signup';
 const AUTH_LOGOUT = 'auth/logout';
 const AUTH_REFRESH = 'auth/refresh';
 
-const { post, get } = DataRepository;
+const { postData, getData } = DataRepository;
 
 export const getLoggedUser = async (loginParams: LoginParams) => {
   try {
-    const response = await post<LoginParams, AuthResponseData>(
-      AUTH_LOG_URL,
+    const response = await axios.post<AuthResponseData>(
+      `${BASE_URL}${AUTH_LOG_URL}`,
       loginParams,
     );
 
@@ -32,7 +32,7 @@ export const getLoggedUser = async (loginParams: LoginParams) => {
 
 export const registerUser = async (registerParams: RegisterParams) => {
   try {
-    const response = await post<RegisterParams, RegisterResponse>(
+    const response = await postData<RegisterParams, RegisterResponse>(
       AUTH_REG_LOGIN,
       registerParams,
     );
@@ -51,7 +51,7 @@ export const registerUser = async (registerParams: RegisterParams) => {
 
 export const logout = async (): Promise<AxiosResponse<void>> => {
   try {
-    return get(AUTH_LOGOUT);
+    return getData(AUTH_LOGOUT);
   } catch (error) {
     if (axios.isAxiosError(error)) {
       const backendErrorMessage =
@@ -65,7 +65,7 @@ export const logout = async (): Promise<AxiosResponse<void>> => {
 };
 
 export const refresh = async (
-  refreshToken: Pick<AuthResponseData, 'refreshToken'>,
+  refreshToken: string,
 ): Promise<
   AxiosResponse<Pick<AuthResponseData, 'accessToken' | 'refreshToken'>>
 > => {

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Company, Location, Price } from '@prisma/client';
+import { Company, Location } from '@prisma/client';
 import { IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateCompanyDto
@@ -40,8 +40,4 @@ export class CreateCompanyDto
   @IsNotEmpty()
   @ApiProperty()
   location: Omit<Location, 'id' | 'companyId'>;
-
-  @IsNotEmpty()
-  @ApiProperty()
-  prices: Omit<Price, 'id' | 'companyId'>[];
 }

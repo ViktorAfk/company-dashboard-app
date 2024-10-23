@@ -25,7 +25,7 @@ export class AuthService {
     const payload = { sub: userId, email, role };
 
     return this.jwtService.sign(payload, {
-      expiresIn: '15m',
+      expiresIn: 1000 * 15 * 60,
       secret: this.appConfigService.JwtSecret,
     });
   }

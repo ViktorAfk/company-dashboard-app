@@ -5,6 +5,7 @@ import {
   ResetPasswordIcon,
 } from '@/components/ui/icons';
 import { LinkItem } from '@/types/link-item';
+import { PlusIcon } from '@radix-ui/react-icons';
 
 export const links: LinkItem[] = [
   {
@@ -30,5 +31,11 @@ export const links: LinkItem[] = [
     label: 'Reset password',
     url: '/reset-password',
     icon: <ResetPasswordIcon />,
+  },
+  {
+    id: 5,
+    label: 'Create company',
+    url: '/create-company',
+    icon: <PlusIcon />,
   },
 ];
