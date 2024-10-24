@@ -8,6 +8,7 @@ import * as bcrypt from 'bcrypt';
 import { getSkippedItems } from 'src/common/decorators/get-skipped-items';
 import { AppConfigService } from 'src/config/app-config.service';
 import { DatabaseService } from 'src/database/database.service';
+import { UploadService } from 'src/upload/upload.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
@@ -16,6 +17,7 @@ export class UsersService {
   constructor(
     private readonly databaseService: DatabaseService,
     private readonly appConfigService: AppConfigService,
+    private readonly uploadService: UploadService,
   ) {}
   async create(createUserDto: CreateUserDto) {
     const SALT = this.appConfigService.saltRounds;
@@ -155,6 +157,32 @@ export class UsersService {
     return this.databaseService.user.delete({
       where: {
         id: adminId,
+      },
+    });
+  }
+
+  async updateUserAvatar(
+    fileName: string,
+    file: Buffer,
+    fileType: string,
+    id: number,
+  ) {
+    const user = await this.findOne(id);
+    if (!user) {
+      throw new NotFoundException(`User with id:${id} doesn't found`);
+    }
+    const { url } = await this.uploadService.save(
+      fileName,
+      file,
+      fileName,
+      'user-avatar',
+    );
+    return this.databaseService.user.update({
+      where: {
+        id,
+      },
+      data: {
+        avatar: url,
       },
     });
   }

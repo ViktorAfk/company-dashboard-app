@@ -19,7 +19,7 @@ export class CompaniesService {
     return this.databaseService.company.create({
       data: {
         ...companyData,
-        Location: {
+        location: {
           create: {
             ...location,
           },
@@ -27,7 +27,7 @@ export class CompaniesService {
       },
       include: {
         prices: true,
-        Location: true,
+        location: true,
       },
     });
   }
@@ -170,7 +170,7 @@ export class CompaniesService {
         id,
       },
       include: {
-        Location: true,
+        location: true,
         prices: true,
       },
     });
@@ -199,11 +199,30 @@ export class CompaniesService {
       throw new NotFoundException('Current company not found');
     }
 
+    console.log('I am updating');
+    const {
+      location: { id: locationId, zip, country, city, building, street },
+      ...restData
+    } = updateCompanyDto;
     return this.databaseService.company.update({
       where: {
         id,
       },
-      data: updateCompanyDto,
+      data: {
+        ...restData,
+        location: {
+          update: {
+            where: { id: locationId },
+            data: {
+              zip,
+              city,
+              country,
+              building,
+              street,
+            },
+          },
+        },
+      },
     });
   }
 
@@ -270,7 +289,7 @@ export class CompaniesService {
           },
         },
         include: {
-          Location: true,
+          location: true,
           prices: true,
         },
       }),

@@ -31,8 +31,8 @@ export class PricesController {
   @Roles('USER')
   @ApiBearerAuth()
   @ApiCreatedResponse({ type: PriceEntity })
-  create(@Body() createPriceDto: CreatePriceDto[]) {
-    return this.pricesService.createMany(createPriceDto);
+  create(@Body() createPriceDto: CreatePriceDto) {
+    return this.pricesService.createPrice(createPriceDto);
   }
 
   // @Get('companies/:companyId')

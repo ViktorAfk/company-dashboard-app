@@ -8,7 +8,7 @@ import * as yup from 'yup';
 import { Button } from '../ui/button';
 import { Form } from '../ui/form';
 import { InputWithLabel } from './InputWithLabel';
-import { signUpSchema } from './validations';
+import { signUpSchema } from './validation/validations';
 
 type SignUpFormFields = yup.InferType<typeof signUpSchema>;
 

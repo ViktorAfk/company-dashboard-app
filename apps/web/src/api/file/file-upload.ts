@@ -1,16 +1,12 @@
-import { User } from '@/types/User';
+import { File } from 'node:buffer';
 import axios from 'axios';
 import { DataRepository } from '../repositories/axios-repository';
-const USER_URL = 'users';
 
-const { getData } = DataRepository;
-export const getUser = async (userId: number | undefined) => {
+const { postData } = DataRepository;
+const UPLOAD_URL = 'avatars';
+export const loadAvatar = async (param: File) => {
   try {
-    if (!userId) {
-      throw new Error('Please add id');
-    }
-    const response = await getData<User>(`${USER_URL}/${userId}`);
-
+    const response = await postData<typeof param, string>(UPLOAD_URL, param);
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -19,6 +15,6 @@ export const getUser = async (userId: number | undefined) => {
       throw new Error(backendErrorMessage);
     }
 
-    throw new Error(`Failed to get login data: ${error}`);
+    throw new Error(`Failed to get company data: ${error}`);
   }
 };

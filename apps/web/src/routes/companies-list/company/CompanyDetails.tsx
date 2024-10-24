@@ -11,24 +11,19 @@ export const CompanyDetails: React.FC = () => {
     data: company,
     isError,
     isLoading,
-    error,
   } = useGetCompanyQuery(Number(companyId));
-  console.log(company);
 
   if (isLoading) {
     return <p>Loading...</p>;
   }
-  // if (isError) {
-  //   console.log(error.message);
-  //   return <p>Oops, something went wrong</p>;
-  // }
+  if (isError) {
+    return <p>Oops, something went wrong</p>;
+  }
   if (!company) {
     return <p>Company not found</p>;
   }
   return (
     <section>
-      <p>{`compnay ${company?.id}`}</p>
-
       <CompanyInfo company={company} />
     </section>
   );

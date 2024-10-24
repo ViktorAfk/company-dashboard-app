@@ -43,7 +43,6 @@ export const companiesListQuery = ({
   });
 
 export const useGetCompanyQuery = (companyId: number) => {
-  console.log(companyId);
   return useQuery({
     queryKey: ['company', companyId],
     queryFn: () => getCompany(companyId),
@@ -69,7 +68,10 @@ export const useUpdateCompanyQuery = () => {
   return useMutation({
     mutationFn: updateCompanyData,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['company'], type: 'active' });
+      queryClient.invalidateQueries({
+        queryKey: ['company'],
+        type: 'active',
+      });
     },
   });
 };

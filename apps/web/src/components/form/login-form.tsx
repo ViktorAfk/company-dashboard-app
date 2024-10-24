@@ -10,7 +10,7 @@ import * as yup from 'yup';
 import { Button } from '../ui/button';
 import { Form } from '../ui/form';
 import { InputWithLabel } from './InputWithLabel';
-import { loginSchema } from './validations';
+import { loginSchema } from './validation/validations';
 
 type LoginFormFields = yup.InferType<typeof loginSchema>;
 

@@ -2,10 +2,15 @@ import { SearchParamsType } from '@/types/query-types';
 import axios from 'axios';
 import api from '../http';
 import { DataRepository } from '../repositories/axios-repository';
-import { Company, CreateCompanyData, ResponseData } from '../types';
+import {
+  Company,
+  CreateCompanyData,
+  ResponseData,
+  UpdateCompanyData,
+} from '../types';
 
 const COMPANIES_URL = 'companies';
-const { getData } = DataRepository;
+const { getData, postData } = DataRepository;
 export const getCompaniesList = async (params?: SearchParamsType) => {
   try {
     const response = await api.get<ResponseData<Company[]>>(COMPANIES_URL, {
@@ -19,13 +24,16 @@ export const getCompaniesList = async (params?: SearchParamsType) => {
       throw new Error(backendErrorMessage);
     }
 
-    throw new Error(`Failed to get login data: ${error}`);
+    throw new Error(`Failed to get company data: ${error}`);
   }
 };
 
 export const addCompany = async (createData: CreateCompanyData) => {
   try {
-    const response = await api.post<Company>(COMPANIES_URL, createData);
+    const response = await postData<typeof createData, Company>(
+      COMPANIES_URL,
+      createData,
+    );
 
     return response.data;
   } catch (error) {
@@ -35,7 +43,7 @@ export const addCompany = async (createData: CreateCompanyData) => {
       throw new Error(backendErrorMessage);
     }
 
-    throw new Error(`Failed to get login data: ${error}`);
+    throw new Error(`Failed to get company data: ${error}`);
   }
 };
 
@@ -51,13 +59,13 @@ export const getCompany = async (companyId: number) => {
       throw new Error(backendErrorMessage);
     }
 
-    throw new Error(`Failed to get login data: ${error}`);
+    throw new Error(`Failed to get company data: ${error}`);
   }
 };
 
 export const updateCompanyData = async (data: {
   companyId: number;
-  dataForUpdate: Partial<Company>;
+  dataForUpdate: Partial<UpdateCompanyData>;
 }) => {
   const { companyId, dataForUpdate } = data;
   try {
@@ -74,7 +82,7 @@ export const updateCompanyData = async (data: {
       throw new Error(backendErrorMessage);
     }
 
-    throw new Error(`Failed to get login data: ${error}`);
+    throw new Error(`Failed to get company data: ${error}`);
   }
 };
 
@@ -89,6 +97,6 @@ export const deleteCompany = async (companyId: number) => {
       throw new Error(backendErrorMessage);
     }
 
-    throw new Error(`Failed to get login data: ${error}`);
+    throw new Error(`Failed to get company data: ${error}`);
   }
 };
