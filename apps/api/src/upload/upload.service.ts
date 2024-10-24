@@ -26,13 +26,18 @@ export class UploadService {
     });
   }
 
-  async uploadUserAvatar(fileName: string, file: Buffer, fileType: string) {
+  async save(
+    fileName: string,
+    file: Buffer,
+    fileType: string,
+    folder: 'user-avatar' | 'company-avatar',
+  ) {
     try {
       const fileId = crypto.randomUUID();
       const command = new PutObjectCommand({
         Bucket: this.bucketName,
 
-        Key: `user-avatar/${fileId}`,
+        Key: `${folder}/${fileId}`,
         Body: file,
         ContentType: fileType,
         Metadata: {
@@ -41,7 +46,7 @@ export class UploadService {
       });
 
       await this.client.send(command);
-      const url = await this.getFileUrl(fileId);
+      const { url } = await this.getFileUrl(fileId);
 
       return {
         url,
@@ -52,11 +57,26 @@ export class UploadService {
     }
   }
 
-  async deleteFile(fileName: string) {
+  async update(
+    fieldId: string,
+    folder: 'user-avatar' | 'company-avatar',
+    fileName: string,
+    file: Buffer,
+    fileType: string,
+  ) {
+    try {
+      await this.remove(fieldId, folder);
+      await this.save(fileName, file, fileType, folder);
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  async remove(fieldId: string, folder: 'user-avatar' | 'company-avatar') {
     try {
       const command = new DeleteObjectCommand({
         Bucket: this.bucketName,
-        Key: `user-avatar/${fileName}`,
+        Key: `${folder}/${fieldId}`,
       });
 
       await this.client.send(command);

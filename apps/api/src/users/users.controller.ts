@@ -8,8 +8,11 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -19,6 +22,7 @@ import {
 import { Role } from '@prisma/client';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Roles } from 'src/common/decorators';
+import { FileValidationPipe } from 'src/common/pipes/file-validation.pipe';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entity';
@@ -29,11 +33,28 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @Roles('USER', 'SUPER_ADMIN')
   @Post()
   @ApiBearerAuth()
   @ApiCreatedResponse({ type: UserEntity })
   async create(@Body() createUserDto: CreateUserDto) {
     return new UserEntity(await this.usersService.create(createUserDto));
+  }
+
+  @Roles('USER', 'ADMIN', 'SUPER_ADMIN')
+  @Post('/:id/attachment')
+  @ApiBearerAuth()
+  @UseInterceptors(FileInterceptor('file'))
+  upload(
+    @Param('id', ParseIntPipe) id: number,
+    @UploadedFile(new FileValidationPipe()) file: Express.Multer.File,
+  ) {
+    return this.usersService.updateUserAvatar(
+      file.originalname,
+      file.buffer,
+      file.mimetype,
+      id,
+    );
   }
 
   @Roles('ADMIN', 'SUPER_ADMIN')

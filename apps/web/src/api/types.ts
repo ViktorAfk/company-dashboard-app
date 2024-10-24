@@ -19,6 +19,7 @@ export interface Price {
   id: number;
   price: number;
   date: string;
+  companyId: number;
 }
 
 export type LoginParams = Pick<RegisterParams, 'email' | 'password'>;
@@ -40,7 +41,7 @@ export interface Company {
   service: string;
   description: string;
   capital: number;
-  createdDate: Date;
+  createdDate: string;
   userId: number;
   location: Location;
   prices: Price[];
@@ -60,6 +61,11 @@ export type CreateCompanyData = Pick<
   location: Omit<Location, 'id'>;
 };
 
+export type UpdateCompanyData = Omit<
+  Company,
+  'createdAt' | 'updatedAt' | 'prices' | 'id' | 'avatar'
+>;
+
 interface Meta {
   count: number;
   lastPage: number;
@@ -70,4 +76,9 @@ interface Meta {
 export type ResponseData<T> = {
   data: T;
   meta: Meta;
+};
+
+export type UploadType = {
+  url: string;
+  fieldId: string;
 };

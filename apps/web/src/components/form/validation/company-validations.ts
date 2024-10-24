@@ -11,7 +11,7 @@ export const schema = yup.object({
     .min(50, 'Description should have at least 50 characters')
     .required(),
   capital: yup.number().required().integer().positive(),
-  createdDate: yup.date().required(),
+  createdDate: yup.string().required(),
   location: yup
     .object({
       zip: yup.number().min(5).required(),

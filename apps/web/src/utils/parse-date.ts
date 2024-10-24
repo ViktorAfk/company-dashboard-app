@@ -1,5 +1,5 @@
 export const parseDate = (date: string) => {
-  const preparedData = date.slice(0, 16).split('T').join(', ');
+  const preparedData = date.split('T')[0];
 
   return preparedData;
 };
