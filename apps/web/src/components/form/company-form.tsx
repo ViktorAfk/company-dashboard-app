@@ -15,7 +15,6 @@ import * as yup from 'yup';
 import { Button } from '../ui/button';
 import { Form } from '../ui/form';
 import { TypographyH3 } from '../ui/typographyH3';
-import { TypographyH2 } from '../ui/typograpyH2';
 import { InputWithLabel } from './InputWithLabel';
 import { schema } from './validation/company-validations';
 
