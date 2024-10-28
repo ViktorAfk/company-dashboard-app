@@ -1,14 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import { AppConfigService } from 'src/config/app-config.service';
 import { DatabaseService } from 'src/database/database.service';
-
-const SALT = process.env.SALT_ROUNDS;
 
 @Injectable()
 export class TokensService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly appConfigService: AppConfigService,
+  ) {}
   async save(userId: number, refreshToken: string) {
-    const hashedToken = await bcrypt.hash(refreshToken, +SALT);
+    const SALT = this.appConfigService.saltRounds;
+    const hashedToken = await bcrypt.hash(refreshToken, SALT);
 
     const token = await this.findOne(userId);
     if (token) {

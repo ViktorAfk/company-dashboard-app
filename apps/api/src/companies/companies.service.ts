@@ -1,33 +1,37 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { Company, Role } from '@prisma/client';
 import { getSkippedItems } from 'src/common/decorators/get-skipped-items';
 import { DatabaseService } from 'src/database/database.service';
+import { UploadService } from 'src/upload/upload.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 
 @Injectable()
 export class CompaniesService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly uploadService: UploadService,
+  ) {}
 
   async create(createCompanyDto: CreateCompanyDto) {
-    const { location, prices, ...companyData } = createCompanyDto;
+    const { location, ...companyData } = createCompanyDto;
 
     return this.databaseService.company.create({
       data: {
         ...companyData,
-        Location: {
+        location: {
           create: {
             ...location,
-          },
-        },
-        prices: {
-          createMany: {
-            data: prices,
           },
         },
       },
       include: {
         prices: true,
-        Location: true,
+        location: true,
       },
     });
   }
@@ -37,8 +41,8 @@ export class CompaniesService {
     query: {
       searchByName?: string;
       searchByService?: string;
-      sortByCreatedDate?: 'asc' | 'desc';
-      sortByCapital?: 'asc' | 'desc';
+      sort?: keyof Pick<Company, 'createdDate' | 'capital'>;
+      order?: 'asc' | 'desc';
       page?: number;
       limit?: number;
     },
@@ -51,8 +55,8 @@ export class CompaniesService {
   async findAll(query: {
     searchByName?: string;
     searchByService?: string;
-    sortByCreatedDate?: 'asc' | 'desc';
-    sortByCapital?: 'asc' | 'desc';
+    sort?: keyof Pick<Company, 'createdDate' | 'capital'>;
+    order?: 'asc' | 'desc';
     page?: number;
     limit?: number;
   }) {
@@ -62,16 +66,17 @@ export class CompaniesService {
   }
 
   async findAllForAdminsDashboard(query: {
+    sort?: keyof Pick<Company, 'createdDate' | 'capital'>;
+    order?: 'asc' | 'desc';
     searchByName?: string;
-    sortByCapital?: 'asc' | 'desc';
     page?: number;
     limit?: number;
   }) {
-    const { page, limit, searchByName, sortByCapital } = query;
+    const { page, limit, order, sort, searchByName } = query;
     const skipItems = getSkippedItems(page, limit);
     const orderBy = [
       {
-        capital: sortByCapital,
+        [order]: sort,
       },
     ];
 
@@ -163,29 +168,128 @@ export class CompaniesService {
     };
   }
 
-  findOne(id: number) {
-    return this.databaseService.company.findUnique({
+  async findOne(id: number, role: Role, userId: number) {
+    const company = await this.databaseService.company.findUnique({
       where: {
         id,
       },
       include: {
-        Location: true,
+        location: true,
         prices: true,
       },
     });
+
+    if (!company) {
+      throw new NotFoundException('Current company not found');
+    }
+
+    if (role === 'USER' && company.userId !== userId) {
+      throw new ForbiddenException(
+        'User with role("User") has access only to his companies',
+      );
+    }
+
+    return company;
   }
 
-  update(id: number, updateCompanyDto: UpdateCompanyDto) {
+  async update(
+    id: number,
+    updateCompanyDto: UpdateCompanyDto,
+    role: Role,
+    userId: number,
+  ) {
+    const company = await this.findOne(id, role, userId);
+    if (!company) {
+      throw new NotFoundException('Current company not found');
+    }
+
+    const {
+      location: { id: locationId, zip, country, city, building, street },
+      ...restData
+    } = updateCompanyDto;
     return this.databaseService.company.update({
       where: {
         id,
       },
-      data: updateCompanyDto,
+      data: {
+        ...restData,
+        location: {
+          update: {
+            where: { id: locationId },
+            data: {
+              zip,
+              city,
+              country,
+              building,
+              street,
+            },
+          },
+        },
+      },
     });
   }
 
-  async remove(id: number) {
-    const company = await this.findOne(id);
+  async loadImage(
+    companyId: number,
+    fileName: string,
+    fileType: string,
+    file: Buffer,
+    role: Role,
+    sub: number,
+  ) {
+    const company = await this.findOne(companyId, role, sub);
+    if (!company) {
+      throw new NotFoundException('Current company not found');
+    }
+    const { url } = await this.uploadService.save(
+      fileName,
+      file,
+      fileType,
+      'company-avatar',
+    );
+    return this.databaseService.company.update({
+      where: {
+        id: companyId,
+      },
+      data: {
+        avatar: url,
+      },
+    });
+  }
+
+  async updateImage(
+    companyId: number,
+    fileName: string,
+    fileType: string,
+    file: Buffer,
+    role: Role,
+    sub: number,
+  ) {
+    const company = await this.findOne(companyId, role, sub);
+    if (!company) {
+      throw new NotFoundException('Current company not found');
+    }
+    const fieldId = company.avatar;
+    await this.uploadService.remove(fieldId, 'company-avatar');
+    const { url } = await this.uploadService.save(
+      fileName,
+      file,
+      fileName,
+      'company-avatar',
+    );
+
+    return this.databaseService.company.update({
+      where: {
+        id: companyId,
+      },
+      data: {
+        avatar: url,
+      },
+    });
+  }
+
+  async remove(id: number, role: Role, userId: number) {
+    const company = await this.findOne(id, role, userId);
     if (!company) {
       throw new NotFoundException('Current company not found');
     }
@@ -197,36 +301,42 @@ export class CompaniesService {
     });
   }
 
+  async removeCompanyLogo(role: Role, sub: number, companyId: number) {
+    const company = await this.findOne(companyId, role, sub);
+    if (!company) {
+      throw new NotFoundException('Current company not found');
+    }
+    await this.uploadService.remove(company.avatar, 'company-avatar');
+
+    return this.databaseService.company.update({
+      where: {
+        id: companyId,
+      },
+      data: {
+        avatar: null,
+      },
+    });
+  }
+
   async getPaginationData(
     query: {
       searchByName?: string;
       searchByService?: string;
-      sortByCreatedDate?: 'asc' | 'desc';
-      sortByCapital?: 'asc' | 'desc';
+      sort?: keyof Pick<Company, 'createdDate' | 'capital'>;
+      order?: 'asc' | 'desc';
       page?: number;
       limit?: number;
     },
     userId?: number,
   ) {
-    const {
-      page,
-      limit,
-      searchByName,
-      searchByService,
-      sortByCapital,
-      sortByCreatedDate,
-    } = query;
+    const { page, limit, searchByName, searchByService, order, sort } = query;
 
     const skipItems = getSkippedItems(page, limit);
     const orderBy = [
       {
-        createdDate: sortByCreatedDate,
-      },
-      {
-        capital: sortByCapital,
+        [sort]: order,
       },
     ];
-
     const [count, data] = await Promise.all([
       this.databaseService.company.count({
         where: {
@@ -257,7 +367,7 @@ export class CompaniesService {
           },
         },
         include: {
-          Location: true,
+          location: true,
           prices: true,
         },
       }),

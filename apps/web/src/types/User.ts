@@ -1,4 +1,4 @@
-type Role = 'user' | 'admin' | 'super admin';
+export type Role = 'user' | 'admin' | 'super admin';
 
 type Location = {
   zip: number;
@@ -19,11 +19,7 @@ export interface User {
   surname: string;
   email: string;
   role: Role;
-  password: string;
-  telephoneNumber: string;
-  logoUrl: string;
-  prices: Price[];
-  userId: number;
+  avatar?: string | null;
 }
 
 export interface Company {
@@ -31,6 +27,7 @@ export interface Company {
   companyName: string;
   service: string;
   description: string;
-  createdAt: string;
+  createdDate: string;
   location: Location;
+  capital: number;
 }

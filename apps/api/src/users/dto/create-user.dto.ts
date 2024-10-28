@@ -16,6 +16,9 @@ export class CreateUserDto
   @ApiProperty()
   name: string;
 
+  @ApiProperty()
+  avatar: string | null;
+
   @IsString()
   @IsNotEmpty()
   @ApiProperty()

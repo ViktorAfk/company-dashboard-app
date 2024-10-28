@@ -9,6 +9,9 @@ export class CompanyEntity implements Company {
   companyName: string;
 
   @ApiProperty()
+  avatar: string | null;
+
+  @ApiProperty()
   service: string;
 
   @ApiProperty()
@@ -18,7 +21,7 @@ export class CompanyEntity implements Company {
   capital: number;
 
   @ApiProperty()
-  createdDate: string;
+  createdDate: Date;
 
   @ApiProperty()
   userId: number;

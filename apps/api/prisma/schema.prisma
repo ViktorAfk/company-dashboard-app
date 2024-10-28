@@ -9,6 +9,7 @@ datasource db {
 
 model User {
   id        Int       @id @default(autoincrement())
+  avatar    String?
   name      String
   surname   String
   email     String    @unique
@@ -28,12 +29,13 @@ enum Role {
 
 model Company {
   id          Int       @id @default(autoincrement())
+  avatar      String?
   companyName String    @unique
   service     String
   description String
   capital     Float
-  createdDate String
-  Location    Location?
+  createdDate DateTime  @default(now())
+  location    Location?
   user        User      @relation(fields: [userId], references: [id])
   userId      Int
   prices      Price[]

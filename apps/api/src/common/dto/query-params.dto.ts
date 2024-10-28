@@ -15,13 +15,13 @@ export class QueryDto {
 
   @ApiProperty()
   @IsOptional()
-  @IsEnum(['asc', 'desc'])
-  sortByCreatedDate?: 'asc' | 'desc';
+  @IsEnum(['createdDate', 'capital'])
+  sort?: 'createdDate' | 'capital';
 
   @ApiProperty()
   @IsOptional()
   @IsEnum(['asc', 'desc'])
-  sortByCapital?: 'asc' | 'desc';
+  order?: 'asc' | 'desc';
 
   @ApiProperty()
   @IsOptional()
@@ -35,5 +35,5 @@ export class QueryDto {
   @IsInt()
   @Min(4)
   @Type(() => Number)
-  limit?: number = 8;
+  limit?: number = 6;
 }

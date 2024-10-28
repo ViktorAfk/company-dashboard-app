@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { CreatePriceDto } from './dto/create-price.dto';
 import { UpdatePriceDto } from './dto/update-price.dto';
@@ -6,8 +6,8 @@ import { UpdatePriceDto } from './dto/update-price.dto';
 @Injectable()
 export class PricesService {
   constructor(private readonly databaseService: DatabaseService) {}
-  createMany(createPriceDto: CreatePriceDto[]) {
-    return this.databaseService.price.createMany({ data: createPriceDto });
+  createPrice(createPriceDto: CreatePriceDto) {
+    return this.databaseService.price.create({ data: createPriceDto });
   }
 
   findAll(companyId: number) {
@@ -26,7 +26,11 @@ export class PricesService {
     });
   }
 
-  update(id: number, updatePriceDto: UpdatePriceDto) {
+  async update(id: number, updatePriceDto: UpdatePriceDto) {
+    const price = await this.findOne(id);
+    if (!price) {
+      throw new NotFoundException('Price not found');
+    }
     return this.databaseService.price.update({
       where: {
         id,
@@ -35,7 +39,11 @@ export class PricesService {
     });
   }
 
-  remove(id: number) {
+  async remove(id: number) {
+    const price = await this.findOne(id);
+    if (!price) {
+      throw new NotFoundException('Price not found');
+    }
     return this.databaseService.price.delete({
       where: {
         id,
