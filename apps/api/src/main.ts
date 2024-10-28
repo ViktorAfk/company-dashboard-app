@@ -36,6 +36,6 @@ async function bootstrap() {
     origin: allowedOrigins,
   });
 
-  await app.listen(3000);
+  await app.listen(appConfig.port);
 }
 bootstrap();
