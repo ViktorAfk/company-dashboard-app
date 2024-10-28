@@ -174,7 +174,7 @@ export class UsersService {
     const { url } = await this.uploadService.save(
       fileName,
       file,
-      fileName,
+      fileType,
       'user-avatar',
     );
     return this.databaseService.user.update({

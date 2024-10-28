@@ -8,8 +8,10 @@ import {
 import {
   addCompany,
   deleteCompany,
+  deleteCompanyLogo,
   getCompaniesList,
   getCompany,
+  loadCompanyLogo,
   updateCompanyData,
 } from './companies';
 
@@ -76,12 +78,43 @@ export const useUpdateCompanyQuery = () => {
   });
 };
 
+export const useUploadCompanyLogo = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: loadCompanyLogo,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['company'],
+        type: 'active',
+      });
+    },
+  });
+};
+
+export const useDeleteCompanyLogoQuery = (companyId: number) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: deleteCompanyLogo,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['company', companyId],
+        type: 'active',
+      });
+    },
+  });
+};
+
 export const useDeleteCompanyQuery = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteCompany,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['company'], type: 'active' });
+      queryClient.invalidateQueries({
+        queryKey: ['companies'],
+        type: 'active',
+      });
     },
   });
 };

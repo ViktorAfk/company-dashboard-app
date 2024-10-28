@@ -6,6 +6,7 @@ import { CompanyField } from './company-field';
 import { EditPopover } from './edit-popover';
 import { CompanyForm } from './form/company-form';
 
+import { CompanyLogo } from './company-logo';
 import { PriceForm } from './form/prices-form';
 import { PriceList } from './price-list';
 import { Button } from './ui/button';
@@ -17,9 +18,9 @@ import {
   CardHeader,
   CardTitle,
 } from './ui/card';
+import { Separator } from './ui/separator';
 import { Tabs } from './ui/tabs';
 import { TypographyH3 } from './ui/typographyH3';
-import { TypographyH2 } from './ui/typograpyH2';
 type Props = {
   company: Company;
 };
@@ -27,6 +28,7 @@ export const CompanyInfo: React.FC<Props> = ({ company }) => {
   const [isShownForm, setIsShownForm] = useState<boolean>(false);
   const {
     id,
+    avatar,
     companyName,
     service,
     description,
@@ -58,9 +60,17 @@ export const CompanyInfo: React.FC<Props> = ({ company }) => {
       <TabsContent value="company">
         <Card>
           <CardHeader>
-            <CardTitle>
-              <TypographyH2>{companyName}</TypographyH2>
-            </CardTitle>
+            <div className="flex items-center">
+              <CompanyLogo
+                companyId={id}
+                className="basis-30"
+                logoUrl={avatar}
+              />
+              <CardTitle className="scroll-m-20 flex-1 text-center pb-2 text-3xl font-semibold tracking-tight first:mt-0">
+                {companyName}
+              </CardTitle>
+            </div>
+            <Separator />
             <CardDescription>Check information about company</CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">

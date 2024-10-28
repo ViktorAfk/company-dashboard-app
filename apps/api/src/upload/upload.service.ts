@@ -46,7 +46,7 @@ export class UploadService {
       });
 
       await this.client.send(command);
-      const { url } = await this.getFileUrl(fileId);
+      const { url } = await this.getFileUrl(fileId, folder);
 
       return {
         url,
@@ -66,13 +66,14 @@ export class UploadService {
   ) {
     try {
       await this.remove(fieldId, folder);
-      await this.save(fileName, file, fileType, folder);
+      return this.save(fileName, file, fileType, folder);
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
   }
 
-  async remove(fieldId: string, folder: 'user-avatar' | 'company-avatar') {
+  async remove(fileUrl: string, folder: 'user-avatar' | 'company-avatar') {
+    const fieldId = fileUrl.split('/').at(-1);
     try {
       const command = new DeleteObjectCommand({
         Bucket: this.bucketName,
@@ -86,7 +87,9 @@ export class UploadService {
     }
   }
 
-  async getFileUrl(key: string) {
-    return { url: `https://${this.bucketName}.s3.amazonaws.com/${key}` };
+  async getFileUrl(key: string, folderName: string) {
+    return {
+      url: `https://${this.bucketName}.s3.amazonaws.com/${folderName}/${key}`,
+    };
   }
 }

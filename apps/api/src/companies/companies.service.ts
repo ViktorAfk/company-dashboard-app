@@ -6,12 +6,16 @@ import {
 import { Company, Role } from '@prisma/client';
 import { getSkippedItems } from 'src/common/decorators/get-skipped-items';
 import { DatabaseService } from 'src/database/database.service';
+import { UploadService } from 'src/upload/upload.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 
 @Injectable()
 export class CompaniesService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly uploadService: UploadService,
+  ) {}
 
   async create(createCompanyDto: CreateCompanyDto) {
     const { location, ...companyData } = createCompanyDto;
@@ -199,7 +203,6 @@ export class CompaniesService {
       throw new NotFoundException('Current company not found');
     }
 
-    console.log('I am updating');
     const {
       location: { id: locationId, zip, country, city, building, street },
       ...restData
@@ -226,6 +229,65 @@ export class CompaniesService {
     });
   }
 
+  async loadImage(
+    companyId: number,
+    fileName: string,
+    fileType: string,
+    file: Buffer,
+    role: Role,
+    sub: number,
+  ) {
+    const company = await this.findOne(companyId, role, sub);
+    if (!company) {
+      throw new NotFoundException('Current company not found');
+    }
+    const { url } = await this.uploadService.save(
+      fileName,
+      file,
+      fileType,
+      'company-avatar',
+    );
+    return this.databaseService.company.update({
+      where: {
+        id: companyId,
+      },
+      data: {
+        avatar: url,
+      },
+    });
+  }
+
+  async updateImage(
+    companyId: number,
+    fileName: string,
+    fileType: string,
+    file: Buffer,
+    role: Role,
+    sub: number,
+  ) {
+    const company = await this.findOne(companyId, role, sub);
+    if (!company) {
+      throw new NotFoundException('Current company not found');
+    }
+    const fieldId = company.avatar;
+    await this.uploadService.remove(fieldId, 'company-avatar');
+    const { url } = await this.uploadService.save(
+      fileName,
+      file,
+      fileName,
+      'company-avatar',
+    );
+
+    return this.databaseService.company.update({
+      where: {
+        id: companyId,
+      },
+      data: {
+        avatar: url,
+      },
+    });
+  }
+
   async remove(id: number, role: Role, userId: number) {
     const company = await this.findOne(id, role, userId);
     if (!company) {
@@ -235,6 +297,23 @@ export class CompaniesService {
     return this.databaseService.company.delete({
       where: {
         id,
+      },
+    });
+  }
+
+  async removeCompanyLogo(role: Role, sub: number, companyId: number) {
+    const company = await this.findOne(companyId, role, sub);
+    if (!company) {
+      throw new NotFoundException('Current company not found');
+    }
+    await this.uploadService.remove(company.avatar, 'company-avatar');
+
+    return this.databaseService.company.update({
+      where: {
+        id: companyId,
+      },
+      data: {
+        avatar: null,
       },
     });
   }
@@ -258,7 +337,6 @@ export class CompaniesService {
         [sort]: order,
       },
     ];
-    console.log(orderBy);
     const [count, data] = await Promise.all([
       this.databaseService.company.count({
         where: {
