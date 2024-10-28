@@ -23,6 +23,7 @@ import { Role } from '@prisma/client';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Roles } from 'src/common/decorators';
 import { FileValidationPipe } from 'src/common/pipes/file-validation.pipe';
+import { ChangePasswordDto } from './dto/change-user-password.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entity';
@@ -119,5 +120,23 @@ export class UsersController {
   @ApiOkResponse({ type: UserEntity })
   async removeAdmin(@Param('id', ParseIntPipe) id: number) {
     return new UserEntity(await this.usersService.removeAdminData(id));
+  }
+
+  @Roles('USER')
+  @Patch(':id/password')
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: UserEntity })
+  async changePassword(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() params: ChangePasswordDto,
+  ) {
+    const { currentPassword, newPassword } = params;
+    return new UserEntity(
+      await this.usersService.updateUserPassword(
+        id,
+        currentPassword,
+        newPassword,
+      ),
+    );
   }
 }
