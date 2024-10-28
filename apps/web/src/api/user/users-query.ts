@@ -1,5 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
-import { getUser } from './user';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { getUser, updateUser, updateUserPassword } from './user';
 
 export const useGetUserQuery = (id: number | undefined) => {
   return useQuery({
@@ -9,8 +9,29 @@ export const useGetUserQuery = (id: number | undefined) => {
   });
 };
 
-// export const useCurrentUserQuery = () => {
-//   const { userId } = useCurrentUserId();
+export const useUpdateUserQuery = (id: number) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: updateUser,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['user', id],
+        type: 'active',
+      });
+    },
+  });
+};
 
-//   return useGetUserQuery(userId);
-// };
+export const useUpdateUserPasswordQuery = (id: number) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: updateUserPassword,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['user', id],
+        type: 'active',
+      });
+    },
+  });
+};

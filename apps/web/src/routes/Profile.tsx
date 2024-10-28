@@ -1,4 +1,7 @@
 import { useGetUserQuery } from '@/api/user/users-query';
+import { EditPopover } from '@/components/edit-popover';
+import { ChangePasswordForm } from '@/components/form/change-password-form';
+import { EditUserForm } from '@/components/form/edit-user-form';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -8,10 +11,10 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuthContext } from '@/hooks/auth-context';
+import { useToggleState } from '@/hooks/use-toggle-state';
 
 export function Profile() {
   const { authData } = useAuthContext();
@@ -20,6 +23,7 @@ export function Profile() {
     isLoading,
     isError,
   } = useGetUserQuery(authData?.userId);
+  const [isShowing, setIsShowing, stopShowing, toggle] = useToggleState();
   if (isLoading) {
     return <p>Loading...</p>;
   }
@@ -62,9 +66,25 @@ export function Profile() {
             </div>
           </CardContent>
           <CardFooter>
-            <Button>Edit information</Button>
+            <Button onClick={setIsShowing}>Edit information</Button>
           </CardFooter>
         </Card>
+        <EditPopover
+          setIsOpen={toggle}
+          isOpen={isShowing}
+          buttonText={'Edit info'}
+          editForm={
+            <EditUserForm
+              user={{
+                id: userData.id,
+                email: userData.email,
+                surname: userData.surname,
+                name: userData.name,
+              }}
+              close={stopShowing}
+            />
+          }
+        />
       </TabsContent>
       <TabsContent value="password">
         <Card>
@@ -75,18 +95,11 @@ export function Profile() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
-            <div className="space-y-1">
-              <Label htmlFor="current">Current password</Label>
-              <Input id="current" type="password" />
-            </div>
-            <div className="space-y-1">
-              <Label htmlFor="new">New password</Label>
-              <Input id="new" type="password" />
-            </div>
+            <ChangePasswordForm userId={userData.id} />
           </CardContent>
-          <CardFooter>
+          {/* <CardFooter>
             <Button>Save password</Button>
-          </CardFooter>
+          </CardFooter> */}
         </Card>
       </TabsContent>
     </Tabs>

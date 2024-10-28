@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -157,6 +158,39 @@ export class UsersService {
     return this.databaseService.user.delete({
       where: {
         id: adminId,
+      },
+    });
+  }
+
+  async updateUserPassword(
+    id: number,
+    currentPassword: string,
+    newPassword: string,
+  ) {
+    const user = await this.databaseService.user.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User with id:${id} doesn't found`);
+    }
+
+    const isCurrentPasswordValid = bcrypt.compare(
+      currentPassword,
+      user.password,
+    );
+    if (!isCurrentPasswordValid) {
+      throw new BadRequestException('Password is not valid');
+    }
+    const SALT = this.appConfigService.saltRounds;
+    const newHashedPassword = await bcrypt.hash(newPassword, SALT);
+
+    return this.databaseService.user.update({
+      where: { id },
+      data: {
+        password: newHashedPassword,
       },
     });
   }
