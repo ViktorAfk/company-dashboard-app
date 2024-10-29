@@ -14,7 +14,7 @@ type PasswordFields = yup.InferType<typeof PasswordSchema>;
 type Props = {
   userId: number;
 };
-export const ChangePasswordForm: React.FC<Props> = ({ userId, close }) => {
+export const ChangePasswordForm: React.FC<Props> = ({ userId }) => {
   const methods = useForm<PasswordFields>({
     defaultValues: {
       oldPassword: '',
