@@ -1,5 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { getUser, updateUser, updateUserPassword } from './user';
+import {
+  deleteUserAvatar,
+  getUser,
+  updateUser,
+  updateUserAvatar,
+  updateUserPassword,
+} from './user';
 
 export const useGetUserQuery = (id: number | undefined) => {
   return useQuery({
@@ -30,6 +36,33 @@ export const useUpdateUserPasswordQuery = (id: number) => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['user', id],
+        type: 'active',
+      });
+    },
+  });
+};
+
+export const useUpdateUserLogoQuery = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: updateUserAvatar,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['user'],
+        type: 'active',
+      });
+    },
+  });
+};
+
+export const useDeleteUserQueryLogo = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: deleteUserAvatar,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['user'],
         type: 'active',
       });
     },

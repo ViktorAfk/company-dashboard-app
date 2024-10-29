@@ -119,6 +119,7 @@ export class CompaniesController {
       sub,
     );
   }
+
   @Roles('USER')
   @Delete(':id')
   @ApiBearerAuth()

@@ -1,7 +1,12 @@
 import { BadRequestException, PipeTransform } from '@nestjs/common';
 
 export class FileValidationPipe implements PipeTransform {
-  private readonly allowedTypes = ['image/jpeg', 'image/png', 'image/tft'];
+  private readonly allowedTypes = [
+    'image/jpeg',
+    'image/png',
+    'image/tft',
+    'image/jpg',
+  ];
   private readonly maxSize = 1024 * 1024;
 
   transform(file: Express.Multer.File) {

@@ -97,9 +97,6 @@ export function Profile() {
           <CardContent className="space-y-2">
             <ChangePasswordForm userId={userData.id} />
           </CardContent>
-          {/* <CardFooter>
-            <Button>Save password</Button>
-          </CardFooter> */}
         </Card>
       </TabsContent>
     </Tabs>

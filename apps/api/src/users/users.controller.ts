@@ -46,16 +46,25 @@ export class UsersController {
   @Post('/:id/attachment')
   @ApiBearerAuth()
   @UseInterceptors(FileInterceptor('file'))
-  upload(
+  async upload(
     @Param('id', ParseIntPipe) id: number,
     @UploadedFile(new FileValidationPipe()) file: Express.Multer.File,
   ) {
-    return this.usersService.updateUserAvatar(
-      file.originalname,
-      file.buffer,
-      file.mimetype,
-      id,
+    return new UserEntity(
+      await this.usersService.updateUserAvatar(
+        file.originalname,
+        file.buffer,
+        file.mimetype,
+        id,
+      ),
     );
+  }
+
+  @Roles('USER', 'ADMIN', 'SUPER_ADMIN')
+  @Delete('/:id/attachment')
+  @ApiBearerAuth()
+  async removeAvatar(@Param('id', ParseIntPipe) id: number) {
+    return new UserEntity(await this.usersService.removeUserAvatar(id));
   }
 
   @Roles('ADMIN', 'SUPER_ADMIN')

@@ -72,7 +72,7 @@ export class AuthService {
     return {
       accessToken,
       refreshToken,
-      name: `${user.name} ${user.surname}`,
+      fullName: `${user.name} ${user.surname}`,
       userId: user.id,
     };
   }

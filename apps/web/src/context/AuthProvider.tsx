@@ -33,14 +33,16 @@ export const AuthContext = createContext<AuthContextProps>({
 
 export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [authData, setAuthData] = useState<AuthUserData | null | undefined>();
-  const { setItem, getItem } = useLocalStorage();
+  const { setItem, getItem, removeItem } = useLocalStorage();
   const signInUser = useCallback((logData: AuthUserData) => {
     setAuthData(logData);
   }, []);
 
   const logoutUser = useCallback(() => {
+    removeItem(ACCESS_TOKEN);
+    removeItem(REFRESH_TOKEN);
     setAuthData(null);
-  }, []);
+  }, [removeItem]);
 
   const value = useMemo(
     () => ({ authData, logoutUser, signInUser }),
