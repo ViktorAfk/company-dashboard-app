@@ -3,7 +3,7 @@ import axios from 'axios';
 import { DataRepository } from '../repositories/axios-repository';
 const USER_URL = 'users';
 
-const { getData, updateData } = DataRepository;
+const { getData, updateData, postData, removeData } = DataRepository;
 export const getUser = async (userId: number | undefined) => {
   try {
     if (!userId) {
@@ -66,5 +66,46 @@ export const updateUserPassword = async (params: {
     }
 
     throw new Error(`Failed to get login data: ${error}`);
+  }
+};
+
+export const updateUserAvatar = async (params: {
+  file: File;
+  id: number;
+}) => {
+  try {
+    const { id, file } = params;
+    const config = new FormData();
+    config.append('file', file);
+
+    const response = await postData<typeof config, User>(
+      `${USER_URL}/${id}/attachment`,
+      config,
+    );
+
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const backendErrorMessage = `${error.response?.data?.error} ${error.response?.data?.message}`;
+      console.error('Error from backend:', backendErrorMessage);
+      throw new Error(backendErrorMessage);
+    }
+
+    throw new Error(`Failed to get login data: ${error}`);
+  }
+};
+
+export const deleteUserAvatar = async (id: number) => {
+  try {
+    const response = await removeData<User>(`${USER_URL}/${id}/attachment`);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const backendErrorMessage = `${error.response?.data?.error} ${error.response?.data?.message}`;
+      console.error('Error from backend:', backendErrorMessage);
+      throw new Error(backendErrorMessage);
+    }
+
+    throw new Error(`Failed to delete company logo data: ${error}`);
   }
 };

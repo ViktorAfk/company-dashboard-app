@@ -220,4 +220,22 @@ export class UsersService {
       },
     });
   }
+
+  async removeUserAvatar(id: number) {
+    const user = await this.findOne(id);
+    if (!user) {
+      throw new NotFoundException(`User with id:${id} doesn't found`);
+    }
+
+    await this.uploadService.remove(user.avatar, 'user-avatar');
+
+    return this.databaseService.user.update({
+      where: {
+        id: id,
+      },
+      data: {
+        avatar: null,
+      },
+    });
+  }
 }
