@@ -9,6 +9,8 @@ import { JwtService } from '@nestjs/jwt';
 import { Role } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { AppConfigService } from 'src/config/app-config.service';
+import { EmailService } from 'src/email/email.service';
+import { ResetTokenService } from 'src/reset-token/reset-token.service';
 import { TokensService } from 'src/tokens/tokens.service';
 import { UsersService } from 'src/users/users.service';
 
@@ -19,6 +21,8 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly tokensService: TokensService,
     private readonly appConfigService: AppConfigService,
+    private readonly resetTokenService: ResetTokenService,
+    private readonly emailService: EmailService,
   ) {}
 
   async generateAccessToken(userId: number, email: string, role: Role) {
@@ -96,6 +100,33 @@ export class AuthService {
     return this.userService.create(newUser);
   }
 
+  async resetPassword(resetToken: string, newPassword: string) {
+    try {
+      const token = await this.resetTokenService.find(resetToken);
+
+      if (!token) {
+        throw new NotFoundException('No reset tokens found. Invalid link');
+      }
+      const isExpired = token.expiryDate < new Date();
+      if (isExpired) {
+        throw new UnauthorizedException('Token is expired');
+      }
+
+      const user = await this.userService.findOne(token.userId);
+
+      if (!user) {
+        throw new NotFoundException('No user found');
+      }
+
+      await this.userService.resetUserPassword(user.id, newPassword);
+      await this.resetTokenService.deleteToken(user.id);
+      return { message: 'Password has been changed' };
+    } catch (error) {
+      console.error();
+      throw new BadRequestException(`Can't reset password: ${error}`);
+    }
+  }
+
   async logout(userId: number) {
     const isTokenExist = await this.tokensService.findOne(userId);
     if (!isTokenExist) {
@@ -104,6 +135,25 @@ export class AuthService {
     return this.tokensService.remove(userId);
   }
 
+  async forgotPassword(email: string) {
+    const user = await this.userService.findByEmail(email);
+    if (user) {
+      const expiryDate = new Date();
+      expiryDate.setHours(expiryDate.getHours() + 1);
+
+      const resetToken = crypto.randomUUID();
+
+      await this.resetTokenService.createResetToken(
+        user.id,
+        resetToken,
+        expiryDate,
+      );
+
+      await this.emailService.sendEmail(email, resetToken);
+    }
+
+    return { message: 'Please check your email and follow the link' };
+  }
   async refreshTokens(userId: number, refreshToken: string) {
     const user = await this.userService.findOne(userId);
     const rfToken = await this.tokensService.findOne(userId);

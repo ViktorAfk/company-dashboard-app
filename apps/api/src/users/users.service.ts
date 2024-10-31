@@ -162,6 +162,16 @@ export class UsersService {
     });
   }
 
+  resetUserPassword(userId: number, newPassword: string) {
+    return this.databaseService.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        password: newPassword,
+      },
+    });
+  }
   async updateUserPassword(
     id: number,
     currentPassword: string,

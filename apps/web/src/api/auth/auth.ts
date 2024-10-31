@@ -1,13 +1,20 @@
 import { AuthResponseData } from '@/types/auth-type';
 import axios, { AxiosResponse } from 'axios';
 import { DataRepository } from '../repositories/axios-repository';
-import { LoginParams, RegisterParams, RegisterResponse } from '../types';
+import {
+  ForgotResponse,
+  LoginParams,
+  RegisterParams,
+  RegisterResponse,
+} from '../types';
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const AUTH_LOG_URL = 'auth/login';
 const AUTH_REG_LOGIN = 'auth/signup';
 const AUTH_LOGOUT = 'auth/logout';
 const AUTH_REFRESH = 'auth/refresh';
+const AUTH_FORGOT = 'auth/forgot-password';
+const AUTH_RESET = 'auth/reset-password';
 
 const { postData, getData } = DataRepository;
 
@@ -78,6 +85,50 @@ export const refresh = async (
     });
 
     return response;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const backendErrorMessage =
+        error.response?.data?.message || 'An unknown error occurred';
+      console.error('Error from backend:', backendErrorMessage);
+      throw new Error(backendErrorMessage);
+    }
+
+    throw new Error(`Failed to get login data: ${error}`);
+  }
+};
+
+export const forgotPassword = async (params: { email: string }) => {
+  try {
+    console.log(params);
+    const response = await postData<typeof params, ForgotResponse>(
+      AUTH_FORGOT,
+      params,
+    );
+
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const backendErrorMessage =
+        error.response?.data?.message || 'An unknown error occurred';
+      console.error('Error from backend:', backendErrorMessage);
+      throw new Error(backendErrorMessage);
+    }
+
+    throw new Error(`Failed to get login data: ${error}`);
+  }
+};
+
+export const resetPassword = async (params: {
+  newPassword: string;
+  resetToken: string;
+}) => {
+  try {
+    const response = await postData<typeof params, ForgotResponse>(
+      AUTH_RESET,
+      params,
+    );
+
+    return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       const backendErrorMessage =

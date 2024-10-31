@@ -86,6 +86,7 @@ export const UserAvatar: React.FC<Props> = ({ userName, userId }) => {
       </div>
       {user?.avatar ? (
         <Button
+          disabled={isLoading}
           onClick={removeUserAvatar}
           className="absolute top-0 right-0 z-10 flex items-start"
           size={'icon'}
@@ -97,7 +98,7 @@ export const UserAvatar: React.FC<Props> = ({ userName, userId }) => {
         <div className="absolute top-0 right-0 z-10">
           <FileUploader
             handleChange={uploadAvatar}
-            disabled={isLoading}
+            disabled={isLoading || !userId}
             name={'attachments'}
             types={fileTypes}
           >

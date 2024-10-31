@@ -16,6 +16,11 @@ const validationObject = z.object({
   AWS_LOGOS_BUCKET: z.string(),
   JWT_SECRET: z.string(),
   JWT_REFRESH_SECRET: z.string(),
+  JWT_RESET_SECRET: z.string(),
+  SMTP_HOST: z.string(),
+  SMTP_PORT: z.string(),
+  SMTP_USER: z.string(),
+  SMTP_PASSWORD: z.string(),
 });
 
 @Injectable()
@@ -61,13 +66,35 @@ export class AppConfigService {
   get AwsSecretAccessKey(): string {
     return this.configService.get<string>('AWS_SECRET_ACCESS_KEY');
   }
+
   get JwtSecret(): string {
     return this.configService.get<string>('JWT_SECRET');
   }
+
   get JwtRefreshSecret(): string {
     return this.configService.get<string>('JWT_REFRESH_SECRET');
   }
+
+  get JwtResetSecret(): string {
+    return this.configService.get<string>('JWT_RESET_SECRET');
+  }
+
   get saltRounds(): number {
     return Number(this.configService.get('SALT_ROUNDS'));
+  }
+
+  get SmtpHost(): string {
+    return this.configService.get('SMTP_HOST');
+  }
+
+  get SmtpPort(): number {
+    return Number(this.configService.get('SMTP_PORT'));
+  }
+
+  get SmtpUser(): string {
+    return this.configService.get('SMTP_USER');
+  }
+  get SmtpPassword(): string {
+    return this.configService.get('SMTP_PASSWORD');
   }
 }

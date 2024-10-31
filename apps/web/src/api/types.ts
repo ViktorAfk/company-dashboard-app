@@ -82,3 +82,7 @@ export type UploadType = {
   url: string;
   fieldId: string;
 };
+
+export type ForgotResponse = {
+  message: string;
+};
