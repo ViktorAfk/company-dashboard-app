@@ -28,14 +28,14 @@ export const links: LinkItem[] = [
   },
   {
     id: 4,
-    label: 'Reset password',
-    url: '/reset-password',
-    icon: <ResetPasswordIcon />,
-  },
-  {
-    id: 5,
     label: 'Create company',
     url: '/create-company',
     icon: <PlusIcon />,
+  },
+  {
+    id: 5,
+    label: 'Forgot password',
+    url: '/forgot-password',
+    icon: <ResetPasswordIcon />,
   },
 ];
