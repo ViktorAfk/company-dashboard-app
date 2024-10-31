@@ -4,13 +4,13 @@ import './index.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Layout } from './components/Layout.tsx';
-// import { loader as companiesLoader } from './components/companies.tsx';
 import { AuthProvider } from './context/AuthProvider.tsx';
 import { CreateCompany } from './routes/CreateCompany.tsx';
 import { ErrorPage } from './routes/ErrorPage.tsx';
 import { Profile } from './routes/Profile.tsx';
-import { ResetPassword } from './routes/ResetPassword.tsx';
 import { AuthGuard } from './routes/auth/AuthGuard.tsx';
+import { ForgotPassword } from './routes/auth/ForgotPassword.tsx';
+import ResetPassword from './routes/auth/ResetPassword.tsx';
 import { SignIn } from './routes/auth/SignIn.tsx';
 import { SignUp } from './routes/auth/SignUp.tsx';
 import { CompaniesList } from './routes/companies-list/CompaniesList.tsx';
@@ -61,7 +61,6 @@ const router = createBrowserRouter([
           {
             path: 'companies',
             element: <CompaniesList />,
-            // loader: companiesLoader(queryClient),
           },
           {
             path: 'companies/:companyId',
@@ -72,16 +71,20 @@ const router = createBrowserRouter([
             element: <Profile />,
           },
           {
-            path: 'reset-password',
-            element: <ResetPassword />,
-          },
-          {
             path: 'create-company',
             element: <CreateCompany />,
           },
         ],
       },
     ],
+  },
+  {
+    path: 'reset-password',
+    element: <ResetPassword />,
+  },
+  {
+    path: 'forgot-password',
+    element: <ForgotPassword />,
   },
   {
     path: 'sign-in',

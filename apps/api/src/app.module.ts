@@ -13,6 +13,9 @@ import { PrismaClientExceptionFilter } from './prisma-client-exception/prisma-cl
 import { TokensModule } from './tokens/tokens.module';
 import { UploadModule } from './upload/upload.module';
 import { UsersModule } from './users/users.module';
+import { EmailService } from './email/email.service';
+import { EmailModule } from './email/email.module';
+import { ResetTokenModule } from './reset-token/reset-token.module';
 
 @Module({
   imports: [
@@ -26,6 +29,8 @@ import { UsersModule } from './users/users.module';
     DashboardModule,
     UploadModule,
     AppConfigModule,
+    EmailModule,
+    ResetTokenModule,
   ],
   controllers: [],
   providers: [
@@ -41,6 +46,7 @@ import { UsersModule } from './users/users.module';
       provide: APP_FILTER,
       useClass: PrismaClientExceptionFilter,
     },
+    EmailService,
   ],
 })
 export class AppModule {}

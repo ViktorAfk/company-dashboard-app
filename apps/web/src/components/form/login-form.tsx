@@ -45,6 +45,7 @@ export const LoginForm: React.FC = () => {
       toast({
         title: 'Sign in failed',
         description: authError?.message,
+        variant: 'destructive',
       });
       throw new Error(`Failed to login user: ${JSON.stringify(error)}`);
     }
@@ -82,11 +83,16 @@ export const LoginForm: React.FC = () => {
         <p>
           Don’t have account?{' '}
           <span>
-            <Link className="text-blue" to={'/sign-up'}>
+            <Link className="hover:text-blue-500" to={'/sign-up'}>
               Sign Up
             </Link>
           </span>
         </p>
+        <div>
+          <Link className="hover:text-blue-500" to={'/forgot-password'}>
+            Forgot password?
+          </Link>
+        </div>
       </div>
     </Form>
   );

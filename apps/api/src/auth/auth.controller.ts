@@ -4,7 +4,9 @@ import { GetCurrentUser, Public } from 'src/common/decorators';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { AuthService } from './auth.service';
+import { ForgoPasswordDto } from './dto/forgot-password.dto';
 import { LoginDto } from './dto/login.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 import { AuthEntity } from './entity/auth.entity';
 import { RefreshAuthGuard } from './refresh-auth.guard';
 
@@ -25,6 +27,28 @@ export class AuthController {
   @ApiOkResponse({ type: UserEntity })
   registration(@Body() input: CreateUserDto) {
     return this.authService.register(input);
+  }
+
+  @Public()
+  @Post('forgot-password')
+  @ApiOkResponse({
+    example: {
+      message: 'Please check your email and follow the link',
+    },
+  })
+  forgotPassword(@Body() input: ForgoPasswordDto) {
+    return this.authService.forgotPassword(input.email);
+  }
+
+  @Public()
+  @Post('reset-password')
+  @ApiOkResponse({
+    example: {
+      message: 'Password has been changed',
+    },
+  })
+  resetPassword(@Body() input: ResetPasswordDto) {
+    return this.authService.resetPassword(input.resetToken, input.newPassword);
   }
 
   @Get('logout')

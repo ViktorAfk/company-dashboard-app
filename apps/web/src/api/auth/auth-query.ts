@@ -1,5 +1,11 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { getLoggedUser, logout, registerUser } from './auth';
+import {
+  forgotPassword,
+  getLoggedUser,
+  logout,
+  registerUser,
+  resetPassword,
+} from './auth';
 
 export const useSignInUser = () => {
   return useMutation({
@@ -19,5 +25,17 @@ export const useLogoutQuery = () => {
     queryFn: logout,
     enabled: false,
     refetchOnWindowFocus: false,
+  });
+};
+
+export const useForgotPasswordQuery = () => {
+  return useMutation({
+    mutationFn: forgotPassword,
+  });
+};
+
+export const useResetPasswordQuery = () => {
+  return useMutation({
+    mutationFn: resetPassword,
   });
 };
