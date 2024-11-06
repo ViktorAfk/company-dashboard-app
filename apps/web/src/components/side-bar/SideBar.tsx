@@ -13,14 +13,6 @@ export const SideBar: React.FC<Props> = ({ userName, userId }) => {
     <div className="flex flex-col items-center h-full justify-between">
       <div className="flex flex-col items-center gap-9">
         <UserAvatar userId={userId} userName={userName} />
-        {/* <div className="flex flex-col items-center">
-          <Avatar className="w-16 h-16 mb-1 bg-primary-foreground rounded-full flex items-center justify-center">
-            <AvatarFallback className="">
-              <UserIcon />
-            </AvatarFallback>
-          </Avatar>
-          <p className="text-white text-lg">{userName || 'User name'}</p>
-        </div> */}
         <Navigation />
       </div>
       <LogoutButton />

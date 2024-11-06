@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Role } from '@prisma/client';
 import { CompaniesService } from 'src/companies/companies.service';
 import { UsersService } from 'src/users/users.service';
 
@@ -34,23 +35,27 @@ export class DashboardService {
     return this.companiesService.findAll(query);
   }
 
-  getCompaniesForAdminDashBoard(query: {
-    searchByName?: string;
-    sortByCapital?: 'asc' | 'desc';
-    page?: number;
-    limit?: number;
-  }) {
-    return this.companiesService.findAllForAdminsDashboard(query);
-  }
-
-  getCompaniesForUserDashboard(
+  getCompaniesForAdminDashBoard(
     userId: number,
+    role: Role,
     query: {
       searchByName?: string;
+      sortByCapital?: 'asc' | 'desc';
       page?: number;
       limit?: number;
     },
   ) {
-    return this.companiesService.findAllForUsersDashboard(userId, query);
+    return this.companiesService.findAllForAdminsDashboard(userId, role, query);
   }
+
+  // getCompaniesForUserDashboard(
+  //   userId: number,
+  //   query: {
+  //     searchByName?: string;
+  //     page?: number;
+  //     limit?: number;
+  //   },
+  // ) {
+  //   return this.companiesService.findAllForUsersDashboard(userId, query);
+  // }
 }

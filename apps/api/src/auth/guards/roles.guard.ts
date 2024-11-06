@@ -1,6 +1,7 @@
 import {
   CanActivate,
   ExecutionContext,
+  ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -28,9 +29,7 @@ export class RolesGuard implements CanActivate {
     const user = request.user;
 
     if (!requiredRoles.includes(user.role)) {
-      throw new UnauthorizedException(
-        "User role isn't equal to required role.",
-      );
+      throw new ForbiddenException("User role isn't equal to required role.");
     }
 
     if (
@@ -38,7 +37,7 @@ export class RolesGuard implements CanActivate {
       request.url.includes('users') &&
       user.sub !== Number(request.params.id)
     ) {
-      throw new UnauthorizedException(
+      throw new ForbiddenException(
         'User with role "User" can have access only to his profile',
       );
     }

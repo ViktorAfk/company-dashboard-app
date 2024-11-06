@@ -1,18 +1,9 @@
 import { companiesListQuery } from '@/api/companies/query-companies';
 import { SearchParamsType } from '@/types/query-types';
-import { QueryClient, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { CompanyCard } from './company-card';
-import { PaginationItems } from './pagiantion-items';
-
-export const loader =
-  (queryClient: QueryClient) => async (params: SearchParamsType) => {
-    const query = companiesListQuery(params);
-    return (
-      queryClient.getQueryData(query.queryKey) ??
-      (await queryClient.fetchQuery(query))
-    );
-  };
+import { PaginationItems } from './pagination-items.tsx';
 
 type Props = {
   allQueryParams: SearchParamsType;

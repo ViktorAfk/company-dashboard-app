@@ -109,3 +109,5 @@ export const deleteUserAvatar = async (id: number) => {
     throw new Error(`Failed to delete company logo data: ${error}`);
   }
 };
+
+// export const getAllAdmins = async (params: type) => {};

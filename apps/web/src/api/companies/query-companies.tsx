@@ -58,7 +58,7 @@ export const useCreateCompanyQuery = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['companies'],
-        type: 'active',
+        type: 'all',
       });
     },
   });

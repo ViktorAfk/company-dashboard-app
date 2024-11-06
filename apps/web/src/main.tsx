@@ -8,9 +8,9 @@ import { AuthProvider } from './context/AuthProvider.tsx';
 import { CreateCompany } from './routes/CreateCompany.tsx';
 import { ErrorPage } from './routes/ErrorPage.tsx';
 import { Profile } from './routes/Profile.tsx';
-import { AuthGuard } from './routes/auth/AuthGuard.tsx';
 import { ForgotPassword } from './routes/auth/ForgotPassword.tsx';
 import ResetPassword from './routes/auth/ResetPassword.tsx';
+import { RoleGuard } from './routes/auth/RoleGuard.tsx';
 import { SignIn } from './routes/auth/SignIn.tsx';
 import { SignUp } from './routes/auth/SignUp.tsx';
 import { CompaniesList } from './routes/companies-list/CompaniesList.tsx';
@@ -38,44 +38,48 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       {
-        element: <AuthGuard />,
+        path: 'dashboard',
+        element: <Dashboard />,
         children: [
           {
-            path: 'dashboard',
-            element: <Dashboard />,
-            children: [
-              {
-                path: 'users',
-                element: <Users />,
-              },
-              {
-                path: 'companies',
-                element: <Companies />,
-              },
-              {
-                path: 'admins',
-                element: <Admins />,
-              },
-            ],
+            path: 'users',
+            element: (
+              <RoleGuard allowedRoles={['ADMIN', 'SUPER_ADMIN']}>
+                <Users />
+              </RoleGuard>
+            ),
           },
           {
             path: 'companies',
-            element: <CompaniesList />,
+            element: <Companies />,
           },
           {
-            path: 'companies/:companyId',
-            element: <CompanyDetails />,
-          },
-          {
-            path: 'profile',
-            element: <Profile />,
-          },
-          {
-            path: 'create-company',
-            element: <CreateCompany />,
+            path: 'admins',
+            element: (
+              <RoleGuard allowedRoles={['SUPER_ADMIN']}>
+                <Admins />
+              </RoleGuard>
+            ),
           },
         ],
       },
+      {
+        path: 'companies',
+        element: <CompaniesList />,
+      },
+      {
+        path: 'companies/:companyId',
+        element: <CompanyDetails />,
+      },
+      {
+        path: 'profile',
+        element: <Profile />,
+      },
+      {
+        path: 'create-company',
+        element: <CreateCompany />,
+      },
+      // ],
     ],
   },
   {
