@@ -4,7 +4,7 @@ import {
   ProfileIcon,
   ResetPasswordIcon,
 } from '@/components/ui/icons';
-import { LinkItem } from '@/types/link-item';
+import { DashBoardLink, LinkItem } from '@/types/link-item';
 import { PlusIcon } from '@radix-ui/react-icons';
 
 export const links: LinkItem[] = [
@@ -38,4 +38,10 @@ export const links: LinkItem[] = [
     url: '/forgot-password',
     icon: <ResetPasswordIcon />,
   },
+];
+
+export const dashBoardsLinks: DashBoardLink[] = [
+  { id: 1, label: 'Admins', url: 'admins' },
+  { id: 2, label: 'Users', url: 'users' },
+  { id: 3, label: 'Companies', url: 'companies' },
 ];

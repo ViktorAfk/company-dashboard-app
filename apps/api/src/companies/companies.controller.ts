@@ -63,14 +63,15 @@ export class CompaniesController {
     );
   }
 
-  @Roles('USER')
+  @Roles('USER', 'ADMIN', 'SUPER_ADMIN')
   @Get()
   @ApiOkResponse({ type: CompanyEntity, isArray: true })
   findAllByUser(
     @GetCurrentUser('sub') userId: number,
+    @GetCurrentUser('role') role: Role,
     @Query() query: QueryCompanyDto,
   ) {
-    return this.companiesService.findAllUsersCompany(userId, query);
+    return this.companiesService.findAllCompanies(userId, query, role);
   }
 
   @Roles('USER', 'ADMIN', 'SUPER_ADMIN')

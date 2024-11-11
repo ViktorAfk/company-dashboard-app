@@ -150,7 +150,7 @@ export class UsersService {
         role: 'ADMIN',
       },
     });
-
+    console.log(admin);
     if (!admin) {
       throw new NotFoundException(`User with id:${adminId} doesn't found`);
     }
@@ -187,7 +187,7 @@ export class UsersService {
       throw new NotFoundException(`User with id:${id} doesn't found`);
     }
 
-    const isCurrentPasswordValid = bcrypt.compare(
+    const isCurrentPasswordValid = await bcrypt.compare(
       currentPassword,
       user.password,
     );

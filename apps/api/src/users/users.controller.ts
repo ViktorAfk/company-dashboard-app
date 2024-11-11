@@ -34,11 +34,19 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Roles('USER', 'SUPER_ADMIN')
+  @Roles('USER')
   @Post()
   @ApiBearerAuth()
   @ApiCreatedResponse({ type: UserEntity })
   async create(@Body() createUserDto: CreateUserDto) {
+    return new UserEntity(await this.usersService.create(createUserDto));
+  }
+
+  @Roles('SUPER_ADMIN')
+  @Post('admins')
+  @ApiBearerAuth()
+  @ApiCreatedResponse({ type: UserEntity })
+  async createAdmin(@Body() createUserDto: CreateUserDto) {
     return new UserEntity(await this.usersService.create(createUserDto));
   }
 
@@ -109,9 +117,10 @@ export class UsersController {
   @ApiBearerAuth()
   @ApiOkResponse({ type: UserEntity })
   async updateAdmin(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('adminId', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
   ) {
+    console.log(updateUserDto);
     return new UserEntity(await this.usersService.update(id, updateUserDto));
   }
 
@@ -127,7 +136,8 @@ export class UsersController {
   @Delete('admins/:adminId')
   @ApiBearerAuth()
   @ApiOkResponse({ type: UserEntity })
-  async removeAdmin(@Param('id', ParseIntPipe) id: number) {
+  async removeAdmin(@Param('adminId', ParseIntPipe) id: number) {
+    console.log(id);
     return new UserEntity(await this.usersService.removeAdminData(id));
   }
 

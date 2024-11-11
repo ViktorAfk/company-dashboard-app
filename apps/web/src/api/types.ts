@@ -1,3 +1,5 @@
+import { User } from '@/types/User';
+
 export interface RegisterParams {
   name: string;
   surname: string;
@@ -5,6 +7,10 @@ export interface RegisterParams {
   password: string;
   role: 'USER';
 }
+
+export type CreateAdminType = Omit<RegisterParams, 'role'> & {
+  role: 'ADMIN';
+};
 
 export interface Location {
   id: number;
@@ -86,3 +92,12 @@ export type UploadType = {
 export type ForgotResponse = {
   message: string;
 };
+
+export type Admin = Omit<User, 'role'> & { role: 'ADMIN' };
+
+export type DashboardAdminData = Pick<
+  Company,
+  'companyName' | 'id' | 'capital'
+>;
+
+export type DashboardUserData = Pick<Company, 'companyName' | 'id' | 'prices'>;
