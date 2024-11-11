@@ -8,6 +8,10 @@ export interface RegisterParams {
   role: 'USER';
 }
 
+export type CreateAdminType = Omit<RegisterParams, 'role'> & {
+  role: 'ADMIN';
+};
+
 export interface Location {
   id: number;
   zip: number;

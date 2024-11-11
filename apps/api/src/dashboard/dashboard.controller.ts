@@ -5,7 +5,6 @@ import { GetCurrentUser, Roles } from 'src/common/decorators';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { DashboardService } from './dashboard.service';
 import { QueryCompanyAdminsDto } from './dto/query-dashboard-admins.dto';
-import { QueryDashBoardUserCompaniesDTO } from './dto/query-dashboard-company.dto';
 import { QueryUsersDTO } from './dto/query-users.dto';
 import { CompanyDashboardAdminEntity } from './entity/dashboard-companies.entity';
 import { DashBoardUserEntity } from './entity/dashboard-users.entity';
@@ -33,16 +32,6 @@ export class DashboardController {
       query,
     );
   }
-
-  // @Roles('USER')
-  // @Get('user/companies')
-  // @ApiBearerAuth()
-  // getAllCompaniesForUsers(
-  //   @GetCurrentUser('sub') userId: number,
-  //   @Query() query: QueryDashBoardUserCompaniesDTO,
-  // ) {
-  //   return this.dashboardService.getCompaniesForUserDashboard(userId, query);
-  // }
 
   @Roles('ADMIN', 'SUPER_ADMIN')
   @Get('users')

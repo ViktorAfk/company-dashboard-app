@@ -47,15 +47,4 @@ export class DashboardService {
   ) {
     return this.companiesService.findAllForAdminsDashboard(userId, role, query);
   }
-
-  // getCompaniesForUserDashboard(
-  //   userId: number,
-  //   query: {
-  //     searchByName?: string;
-  //     page?: number;
-  //     limit?: number;
-  //   },
-  // ) {
-  //   return this.companiesService.findAllForUsersDashboard(userId, query);
-  // }
 }

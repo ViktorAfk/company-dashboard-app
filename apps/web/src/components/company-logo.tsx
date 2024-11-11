@@ -5,6 +5,7 @@ import {
 import { toast } from '@/hooks/use-toast';
 import { useToggleState } from '@/hooks/use-toggle-state';
 import { cn } from '@/lib/utils';
+import { ComponentsGuard } from '@/routes/auth/ComponentsGuard';
 import { Avatar } from '@radix-ui/react-avatar';
 import { DownloadIcon, TrashIcon } from '@radix-ui/react-icons';
 import React from 'react';
@@ -83,31 +84,35 @@ export const CompanyLogo: React.FC<Props> = ({
           <Avatar>
             <AvatarImage className="w-20 h-20" src={logoUrl} />
           </Avatar>
-          <Button
-            disabled={isLoading}
-            onClick={deleteLogo}
-            type="button"
-            size={'sm'}
-            variant={'destructive'}
-          >
-            <TrashIcon /> Delete
-          </Button>
+          <ComponentsGuard allowedRoles={['USER']}>
+            <Button
+              disabled={isLoading}
+              onClick={deleteLogo}
+              type="button"
+              size={'sm'}
+              variant={'destructive'}
+            >
+              <TrashIcon /> Delete
+            </Button>
+          </ComponentsGuard>
         </div>
       ) : (
         <div className="flex items-center gap-2">
-          <div className={'flex items-center'}>
-            <FileUploader
-              className="flex items-center"
-              handleChange={loadImage}
-              disabled={isLoading}
-              name={'attachments'}
-              types={fileTypes}
-            >
-              <div className="bg-secondary w-16 h-16 rounded-full flex justify-center items-center">
-                <DownloadIcon className="h-10 w-10" />
-              </div>
-            </FileUploader>
-          </div>
+          <ComponentsGuard allowedRoles={['USER']}>
+            <div className={'flex items-center'}>
+              <FileUploader
+                className="flex items-center"
+                handleChange={loadImage}
+                disabled={isLoading}
+                name={'attachments'}
+                types={fileTypes}
+              >
+                <div className="bg-secondary w-16 h-16 rounded-full flex justify-center items-center">
+                  <DownloadIcon className="h-10 w-10" />
+                </div>
+              </FileUploader>
+            </div>
+          </ComponentsGuard>
         </div>
       )}
     </div>

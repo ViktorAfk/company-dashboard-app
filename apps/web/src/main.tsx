@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Layout } from './components/Layout.tsx';
 import { AuthProvider } from './context/AuthProvider.tsx';
+import { CreateAdmin } from './routes/CreateAdmin.tsx';
 import { CreateCompany } from './routes/CreateCompany.tsx';
 import { ErrorPage } from './routes/ErrorPage.tsx';
 import { Profile } from './routes/Profile.tsx';
@@ -79,7 +80,14 @@ const router = createBrowserRouter([
         path: 'create-company',
         element: <CreateCompany />,
       },
-      // ],
+      {
+        path: 'create-admin',
+        element: (
+          <RoleGuard allowedRoles={['SUPER_ADMIN']}>
+            <CreateAdmin />
+          </RoleGuard>
+        ),
+      },
     ],
   },
   {

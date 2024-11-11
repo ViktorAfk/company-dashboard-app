@@ -1,4 +1,4 @@
-import { Role, User } from '@/types/User';
+import { Role } from '@/types/User';
 import { SearchParamsType } from '@/types/query-types';
 import axios from 'axios';
 import { DataRepository } from '../repositories/axios-repository';
@@ -8,10 +8,9 @@ import {
   DashboardUserData,
   ResponseData,
 } from '../types';
-const { getData, updateData, postData, removeData } = DataRepository;
+const { getData } = DataRepository;
 
 const DASHBOARD_ADMINS = 'dashboard/admins';
-const DASHBOARD_USERS = 'dashboard/users';
 const DASHBOARD_COMPANIES = 'dashboard/companies';
 
 export const getAllAdminsForDashboard = async (
@@ -20,27 +19,6 @@ export const getAllAdminsForDashboard = async (
   try {
     const response = await getData<ResponseData<Admin[]>>(
       DASHBOARD_ADMINS,
-      params,
-    );
-
-    return response.data;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      const backendErrorMessage = `${error.response?.data?.error} ${error.response?.data?.message}`;
-      console.error('Error from backend:', backendErrorMessage);
-      throw new Error(backendErrorMessage);
-    }
-
-    throw new Error(`Failed to get admins data: ${error}`);
-  }
-};
-
-export const getAllUsersForDashboard = async (
-  params: Pick<SearchParamsType, 'page'>,
-) => {
-  try {
-    const response = await getData<ResponseData<User[]>>(
-      DASHBOARD_USERS,
       params,
     );
 

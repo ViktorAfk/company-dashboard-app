@@ -36,7 +36,7 @@ export class CompaniesService {
     });
   }
 
-  async findAllUsersCompany(
+  async findAllCompanies(
     userId: number,
     query: {
       searchByName?: string;
@@ -46,7 +46,12 @@ export class CompaniesService {
       page?: number;
       limit?: number;
     },
+    role: Role,
   ) {
+    if (role !== Role.USER) {
+      return this.getPaginationData(query);
+    }
+
     const data = await this.getPaginationData(query, userId);
 
     return data;
@@ -132,54 +137,6 @@ export class CompaniesService {
       },
     };
   }
-
-  // async findAllForUsersDashboard(
-  //   userId: number,
-  //   query: {
-  //     searchByName?: string;
-  //     page?: number;
-  //     limit?: number;
-  //   },
-  // ) {
-  //   const { page, limit, searchByName } = query;
-  //   const skipItems = getSkippedItems(page, limit);
-
-  //   const [count, data] = await Promise.all([
-  //     this.databaseService.company.count({
-  //       where: {
-  //         userId,
-  //         companyName: {
-  //           contains: searchByName,
-  //           mode: 'insensitive',
-  //         },
-  //       },
-  //     }),
-
-  //     this.databaseService.company.findMany({
-  //       where: {
-  //         userId,
-  //       },
-  //       select: {
-  //         companyName: true,
-  //         prices: true,
-  //       },
-  //       skip: skipItems,
-  //       take: limit,
-  //     }),
-  //   ]);
-
-  //   const lastPage = Math.ceil(count / limit);
-
-  //   return {
-  //     data,
-  //     meta: {
-  //       count,
-  //       prev: page > 1 ? page - 1 : null,
-  //       next: page < lastPage ? page + 1 : null,
-  //       lastPage,
-  //     },
-  //   };
-  // }
 
   async findOne(id: number, role: Role, userId: number) {
     const company = await this.databaseService.company.findUnique({

@@ -1,9 +1,15 @@
 import { User } from '@/types/User';
+import { SearchParamsType } from '@/types/query-types';
 import axios from 'axios';
 import { DataRepository } from '../repositories/axios-repository';
+import { Admin, CreateAdminType, ResponseData } from '../types';
+
 const USER_URL = 'users';
+const ADMINS_URL = 'users/admins';
+const DASHBOARD_USERS = 'dashboard/users';
 
 const { getData, updateData, postData, removeData } = DataRepository;
+
 export const getUser = async (userId: number | undefined) => {
   try {
     if (!userId) {
@@ -23,6 +29,27 @@ export const getUser = async (userId: number | undefined) => {
   }
 };
 
+export const getAllUsersForDashboard = async (
+  params: Pick<SearchParamsType, 'page'>,
+) => {
+  try {
+    const response = await getData<ResponseData<User[]>>(
+      DASHBOARD_USERS,
+      params,
+    );
+
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const backendErrorMessage = `${error.response?.data?.error} ${error.response?.data?.message}`;
+      console.error('Error from backend:', backendErrorMessage);
+      throw new Error(backendErrorMessage);
+    }
+
+    throw new Error(`Failed to get admins data: ${error}`);
+  }
+};
+
 export const updateUser = async (
   params: Pick<User, 'id' | 'email' | 'name' | 'surname'>,
 ) => {
@@ -30,6 +57,28 @@ export const updateUser = async (
     const { id, ...restData } = params;
     const response = await updateData<Omit<typeof params, 'id'>, User>(
       `${USER_URL}/${id}`,
+      restData,
+    );
+
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const backendErrorMessage = `${error.response?.data?.error} ${error.response?.data?.message}`;
+      console.error('Error from backend:', backendErrorMessage);
+      throw new Error(backendErrorMessage);
+    }
+
+    throw new Error(`Failed to get login data: ${error}`);
+  }
+};
+
+export const updateAdminsData = async (
+  params: Pick<User, 'email' | 'name' | 'surname' | 'id'>,
+) => {
+  try {
+    const { id, ...restData } = params;
+    const response = await updateData<Omit<typeof params, 'id'>, User>(
+      `${ADMINS_URL}/${id}`,
       restData,
     );
 
@@ -95,6 +144,38 @@ export const updateUserAvatar = async (params: {
   }
 };
 
+export const createAdmin = async (params: CreateAdminType) => {
+  try {
+    const response = await postData<CreateAdminType, Admin>(ADMINS_URL, params);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const backendErrorMessage =
+        error.response?.data?.message || 'An unknown error occurred';
+      console.error('Error from backend:', backendErrorMessage);
+      throw new Error(backendErrorMessage);
+    }
+
+    throw new Error(`Failed to get login data: ${error}`);
+  }
+};
+
+export const deleteAdminData = async (id: number) => {
+  try {
+    const response = await removeData<User>(`${ADMINS_URL}/${id}`);
+
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const backendErrorMessage = `${error.response?.data?.error} ${error.response?.data?.message}`;
+      console.error('Error from backend:', backendErrorMessage);
+      throw new Error(backendErrorMessage);
+    }
+
+    throw new Error(`Failed to get login data: ${error}`);
+  }
+};
+
 export const deleteUserAvatar = async (id: number) => {
   try {
     const response = await removeData<User>(`${USER_URL}/${id}/attachment`);
@@ -109,5 +190,3 @@ export const deleteUserAvatar = async (id: number) => {
     throw new Error(`Failed to delete company logo data: ${error}`);
   }
 };
-
-// export const getAllAdmins = async (params: type) => {};

@@ -45,6 +45,7 @@ export class RolesGuard implements CanActivate {
     if (!user) {
       throw new UnauthorizedException('User not authenticated.');
     }
+
     return true;
   }
 }

@@ -6,6 +6,7 @@ import { CompanyField } from './company-field';
 import { EditPopover } from './edit-popover';
 import { CompanyForm } from './form/company-form';
 
+import { ComponentsGuard } from '@/routes/auth/ComponentsGuard';
 import { CompanyLogo } from './company-logo';
 import { PriceForm } from './form/prices-form';
 import { PriceList } from './price-list';
@@ -99,27 +100,29 @@ export const CompanyInfo: React.FC<Props> = ({ company }) => {
             </div>
           </CardContent>
           <CardFooter className="flex justify-center">
-            <EditPopover
-              hasButtonTrigger={true}
-              isOpen={isShownForm}
-              setIsOpen={toggle}
-              buttonText="Edit company info"
-              editForm={
-                <CompanyForm
-                  company={{
-                    id,
-                    companyName,
-                    service,
-                    description,
-                    capital,
-                    createdDate: parseDate(createdDate),
-                    location,
-                    userId,
-                  }}
-                  closeForm={closeForm}
-                />
-              }
-            />
+            <ComponentsGuard allowedRoles={['USER']}>
+              <EditPopover
+                hasButtonTrigger={true}
+                isOpen={isShownForm}
+                setIsOpen={toggle}
+                buttonText="Edit company info"
+                editForm={
+                  <CompanyForm
+                    company={{
+                      id,
+                      companyName,
+                      service,
+                      description,
+                      capital,
+                      createdDate: parseDate(createdDate),
+                      location,
+                      userId,
+                    }}
+                    closeForm={closeForm}
+                  />
+                }
+              />
+            </ComponentsGuard>
           </CardFooter>
         </Card>
       </TabsContent>
@@ -145,9 +148,11 @@ export const CompanyInfo: React.FC<Props> = ({ company }) => {
               )}
             </div>
           </CardContent>
-          <CardFooter>
-            <Button onClick={showForm}>Add price</Button>
-          </CardFooter>
+          <ComponentsGuard allowedRoles={['USER']}>
+            <CardFooter>
+              <Button onClick={showForm}>Add price</Button>
+            </CardFooter>
+          </ComponentsGuard>
         </Card>
       </TabsContent>
     </Tabs>

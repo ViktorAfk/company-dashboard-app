@@ -1,4 +1,4 @@
-import { useGetAllUsersQuery } from '@/api/dashboard/dashboard-query';
+import { useGetAllUsersQuery } from '@/api/user/users-query.ts';
 import { useQueryParams } from '@/hooks/use-query-params';
 import { PaginationItems } from './pagination-items.tsx';
 import { Spinner } from './ui/Spinner';
@@ -37,8 +37,6 @@ export const UsersList: React.FC = () => {
   }
   const { meta, data: users } = usersData;
 
-  const hasOnlyOnePage = meta.prev !== null && meta.next !== null;
-
   return (
     <div>
       <Table className="bg-card mb-5">
@@ -64,7 +62,7 @@ export const UsersList: React.FC = () => {
           ))}
         </TableBody>
       </Table>
-      {!hasOnlyOnePage && (
+      {meta.lastPage > 1 && (
         <PaginationItems previousPage={meta.prev} nextPage={meta.next} />
       )}
     </div>
