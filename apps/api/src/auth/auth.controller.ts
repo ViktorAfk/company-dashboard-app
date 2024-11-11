@@ -1,11 +1,11 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { GetCurrentUser, Public } from 'src/common/decorators';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { AuthService } from './auth.service';
 import { ForgoPasswordDto } from './dto/forgot-password.dto';
 import { LoginDto } from './dto/login.dto';
+import { RegisterDto } from './dto/register.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { AuthEntity } from './entity/auth.entity';
 import { RefreshAuthGuard } from './refresh-auth.guard';
@@ -25,7 +25,7 @@ export class AuthController {
   @Public()
   @Post('signup')
   @ApiOkResponse({ type: UserEntity })
-  registration(@Body() input: CreateUserDto) {
+  registration(@Body() input: RegisterDto) {
     return this.authService.register(input);
   }
 

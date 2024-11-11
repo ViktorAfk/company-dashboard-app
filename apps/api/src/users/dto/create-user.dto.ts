@@ -5,7 +5,9 @@ import {
   IsEnum,
   IsNotEmpty,
   IsString,
-  MinLength,
+  IsStrongPassword,
+  Matches,
+  MaxLength,
 } from 'class-validator';
 
 export class CreateUserDto
@@ -14,6 +16,10 @@ export class CreateUserDto
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
+  @MaxLength(20, { message: 'Name must be between 1 and 20 characters.' })
+  @Matches(/^[A-Z][a-z]*$/, {
+    message: 'Name must contain only alphabetic characters.',
+  })
   name: string;
 
   @ApiProperty()
@@ -22,12 +28,28 @@ export class CreateUserDto
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
+  @MaxLength(30, { message: 'Surname must be between 1 and 30 characters.' })
+  @Matches(/^[A-Z][a-z]*$/, {
+    message: 'Surname must contain only alphabetic characters.',
+  })
   surname: string;
 
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
-  @MinLength(8)
+  @IsStrongPassword(
+    {
+      minLength: 8,
+      minUppercase: 1,
+      minLowercase: 1,
+      minNumbers: 1,
+      minSymbols: 0,
+    },
+    {
+      message:
+        'Password must be at least 8 characters long and include an uppercase letter, lowercase letter, and number',
+    },
+  )
   password: string;
 
   @IsEmail()
