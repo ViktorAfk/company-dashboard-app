@@ -1,4 +1,4 @@
-export type Role = 'user' | 'admin' | 'super admin';
+export type Role = 'USER' | 'ADMIN' | 'SUPER_ADMIN';
 
 type Location = {
   zip: number;
@@ -8,7 +8,7 @@ type Location = {
   building: number;
 };
 
-type Price = {
+export type Price = {
   data: string;
   price: string;
 };

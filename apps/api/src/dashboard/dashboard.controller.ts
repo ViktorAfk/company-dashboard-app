@@ -1,10 +1,10 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { Role } from '@prisma/client';
 import { GetCurrentUser, Roles } from 'src/common/decorators';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { DashboardService } from './dashboard.service';
 import { QueryCompanyAdminsDto } from './dto/query-dashboard-admins.dto';
-import { QueryDashBoardUserCompaniesDTO } from './dto/query-dashboard-company.dto';
 import { QueryUsersDTO } from './dto/query-users.dto';
 import { CompanyDashboardAdminEntity } from './entity/dashboard-companies.entity';
 import { DashBoardUserEntity } from './entity/dashboard-users.entity';
@@ -14,25 +14,23 @@ import { DashBoardUserEntity } from './entity/dashboard-users.entity';
 export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) {}
 
-  @Roles('ADMIN', 'SUPER_ADMIN')
+  @Roles('ADMIN', 'SUPER_ADMIN', 'USER')
   @Get('companies')
   @ApiBearerAuth()
   @ApiOkResponse({
     description: 'A list of companies with pagination metadata',
     type: CompanyDashboardAdminEntity,
   })
-  getAllCompaniesForAdmins(@Query() query: QueryCompanyAdminsDto) {
-    return this.dashboardService.getCompaniesForAdminDashBoard(query);
-  }
-
-  @Roles('USER')
-  @Get('user/companies')
-  @ApiBearerAuth()
-  getAllCompaniesForUsers(
-    @GetCurrentUser('sub') userId: number,
-    @Query() query: QueryDashBoardUserCompaniesDTO,
+  getAllCompaniesForAdmins(
+    @Query() query: QueryCompanyAdminsDto,
+    @GetCurrentUser('sub') sub: number,
+    @GetCurrentUser('role') role: Role,
   ) {
-    return this.dashboardService.getCompaniesForUserDashboard(userId, query);
+    return this.dashboardService.getCompaniesForAdminDashBoard(
+      sub,
+      role,
+      query,
+    );
   }
 
   @Roles('ADMIN', 'SUPER_ADMIN')

@@ -1,5 +1,7 @@
 import { App } from '@/App';
+import { CurrentUserContextProvider } from '@/context/AuthUser';
 import { useAuthContext } from '@/hooks/auth-context';
+import { AuthGuard } from '@/routes/auth/AuthGuard';
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { SideBar } from './side-bar/SideBar';
@@ -15,7 +17,11 @@ export const Layout: React.FC = () => {
       </aside>
       <div className="flex-1 h-dvh overflow-y-auto max-w-screen-xl bg-secondary p-10">
         {!authData && <App />}
-        <Outlet />
+        <AuthGuard>
+          <CurrentUserContextProvider>
+            <Outlet />
+          </CurrentUserContextProvider>
+        </AuthGuard>
       </div>
       <Toaster />
     </main>

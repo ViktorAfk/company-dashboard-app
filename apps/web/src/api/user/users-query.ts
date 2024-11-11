@@ -1,6 +1,9 @@
+import { SearchParamsType } from '@/types/query-types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+
 import {
   deleteUserAvatar,
+  getAllUsersForDashboard,
   getUser,
   updateUser,
   updateUserAvatar,
@@ -25,6 +28,13 @@ export const useUpdateUserQuery = (id: number) => {
         type: 'active',
       });
     },
+  });
+};
+
+export const useGetAllUsersQuery = (params: Pick<SearchParamsType, 'page'>) => {
+  return useQuery({
+    queryKey: ['users', params.page],
+    queryFn: () => getAllUsersForDashboard(params),
   });
 };
 

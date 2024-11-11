@@ -2,6 +2,7 @@ import { useDeletePriceQuery } from '@/api/prices/prices-query';
 import { Price } from '@/api/types';
 import { toast } from '@/hooks/use-toast';
 import { useToggleState } from '@/hooks/use-toggle-state';
+import { ComponentsGuard } from '@/routes/auth/ComponentsGuard';
 import { parseDate } from '@/utils/parse-date';
 import { Pencil2Icon, TrashIcon } from '@radix-ui/react-icons';
 import React, { useState } from 'react';
@@ -44,31 +45,33 @@ export const PriceList: React.FC<Props> = ({ prices, companyId }) => {
             <CompanyField keyField="date" valueField={parseDate(date)} />
             <CompanyField keyField="price" valueField={price.toString()} />
             <Separator className="mb-5" />
-            <div className="flex gap-1  top-2 right-2">
-              <Button
-                onClick={() => {
-                  setCurrentPrice({
-                    id,
-                    date: parseDate(date),
-                    price,
-                    companyId,
-                  });
-                  setIsShownForm();
-                }}
-              >
-                <Pencil2Icon />
-                Edit
-              </Button>
-              <Button
-                onClick={() => {
-                  removePrice(id);
-                }}
-                variant={'secondary'}
-              >
-                <TrashIcon />
-                Delete
-              </Button>
-            </div>
+            <ComponentsGuard allowedRoles={['USER']}>
+              <div className="flex gap-1  top-2 right-2">
+                <Button
+                  onClick={() => {
+                    setCurrentPrice({
+                      id,
+                      date: parseDate(date),
+                      price,
+                      companyId,
+                    });
+                    setIsShownForm();
+                  }}
+                >
+                  <Pencil2Icon />
+                  Edit
+                </Button>
+                <Button
+                  onClick={() => {
+                    removePrice(id);
+                  }}
+                  variant={'secondary'}
+                >
+                  <TrashIcon />
+                  Delete
+                </Button>
+              </div>
+            </ComponentsGuard>
           </Card>
         ))}
       </div>

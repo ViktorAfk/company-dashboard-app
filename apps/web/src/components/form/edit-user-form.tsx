@@ -1,3 +1,4 @@
+import { useUpdateAdminMutation } from '@/api/admins/admins-query';
 import { useUpdateUserQuery } from '@/api/user/users-query';
 import { toast } from '@/hooks/use-toast';
 import { User } from '@/types/User';
@@ -13,10 +14,16 @@ import { ProfileSchema } from './validation/edit-user-validtation';
 type Props = {
   user: Pick<User, 'id' | 'email' | 'name' | 'surname'>;
   close: () => void;
+  isAdmin?: boolean;
 };
 
 type UserFIelds = yup.InferType<typeof ProfileSchema>;
-export const EditUserForm: React.FC<Props> = ({ user, close }) => {
+
+export const EditUserForm: React.FC<Props> = ({
+  user,
+  close,
+  isAdmin = false,
+}) => {
   const methods = useForm<UserFIelds>({
     defaultValues: user || {
       name: '',
@@ -29,9 +36,18 @@ export const EditUserForm: React.FC<Props> = ({ user, close }) => {
   const { mutateAsync: updateUserData, error: userError } = useUpdateUserQuery(
     user.id,
   );
+  const { mutateAsync: updateAdminsData } = useUpdateAdminMutation();
 
   const onSubmit = async (data: UserFIelds) => {
     try {
+      if (isAdmin) {
+        await updateAdminsData({ ...data, id: user.id });
+        toast({
+          title: "Admin's information has been updated",
+        });
+        close();
+        return;
+      }
       await updateUserData({ ...data, id: user.id });
       toast({
         title: "User's information has been updated",

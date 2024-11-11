@@ -1,11 +1,14 @@
-import { useAuthContext } from '@/hooks/auth-context';
+import { DashBoardLinks } from '@/components/dashboard-links';
 import React from 'react';
+import { Outlet } from 'react-router-dom';
 
 export const Dashboard: React.FC = () => {
-  const { authData } = useAuthContext();
   return (
     <section className="w-full min-h-dvh">
-      <h1>hello</h1>
+      <div className="mb-5">
+        <DashBoardLinks />
+      </div>
+      <Outlet />
     </section>
   );
 };

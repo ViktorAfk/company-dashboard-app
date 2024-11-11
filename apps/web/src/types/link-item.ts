@@ -6,3 +6,5 @@ export interface LinkItem {
   url: string;
   icon: ReactNode;
 }
+
+export type DashBoardLink = Omit<LinkItem, 'icon'>;

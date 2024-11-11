@@ -45,6 +45,7 @@ export class AuthService {
 
   async login(email: string, password: string) {
     const user = await this.userService.findByEmail(email);
+    console.log(user);
 
     if (!user) {
       throw new NotFoundException(
@@ -52,7 +53,7 @@ export class AuthService {
       );
     }
 
-    const isPasswordValid = bcrypt.compare(user.password, password);
+    const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
       throw new UnauthorizedException(
@@ -162,9 +163,9 @@ export class AuthService {
       throw new ForbiddenException('Access denied');
     }
 
-    const isRfTokensMatches = bcrypt.compare(
-      rfToken.refreshToken,
+    const isRfTokensMatches = await bcrypt.compare(
       refreshToken,
+      rfToken.refreshToken,
     );
 
     if (!isRfTokensMatches) {

@@ -36,7 +36,7 @@ export class CompaniesService {
     });
   }
 
-  async findAllUsersCompany(
+  async findAllCompanies(
     userId: number,
     query: {
       searchByName?: string;
@@ -46,7 +46,12 @@ export class CompaniesService {
       page?: number;
       limit?: number;
     },
+    role: Role,
   ) {
+    if (role !== Role.USER) {
+      return this.getPaginationData(query);
+    }
+
     const data = await this.getPaginationData(query, userId);
 
     return data;
@@ -65,13 +70,17 @@ export class CompaniesService {
     return data;
   }
 
-  async findAllForAdminsDashboard(query: {
-    sort?: keyof Pick<Company, 'createdDate' | 'capital'>;
-    order?: 'asc' | 'desc';
-    searchByName?: string;
-    page?: number;
-    limit?: number;
-  }) {
+  async findAllForAdminsDashboard(
+    userId: number,
+    role: Role,
+    query: {
+      sort?: keyof Pick<Company, 'createdDate' | 'capital'>;
+      order?: 'asc' | 'desc';
+      searchByName?: string;
+      page?: number;
+      limit?: number;
+    },
+  ) {
     const { page, limit, order, sort, searchByName } = query;
     const skipItems = getSkippedItems(page, limit);
     const orderBy = [
@@ -82,8 +91,8 @@ export class CompaniesService {
 
     const [count, data] = await Promise.all([
       this.databaseService.company.count({
-        orderBy,
         where: {
+          userId: role === 'USER' ? userId : {},
           companyName: {
             contains: searchByName,
             mode: 'insensitive',
@@ -93,6 +102,7 @@ export class CompaniesService {
       this.databaseService.company.findMany({
         orderBy,
         where: {
+          userId: role === 'USER' ? userId : {},
           companyName: {
             contains: searchByName,
             mode: 'insensitive',
@@ -100,58 +110,18 @@ export class CompaniesService {
         },
         skip: skipItems,
         take: limit,
-        select: {
-          companyName: true,
-          capital: true,
-        },
-      }),
-    ]);
-
-    const lastPage = Math.ceil(count / limit);
-
-    return {
-      data,
-      meta: {
-        count,
-        prev: page > 1 ? page - 1 : null,
-        next: page < lastPage ? page + 1 : null,
-        lastPage,
-      },
-    };
-  }
-
-  async findAllForUsersDashboard(
-    userId: number,
-    query: {
-      searchByName?: string;
-      page?: number;
-      limit?: number;
-    },
-  ) {
-    const { page, limit, searchByName } = query;
-    const skipItems = getSkippedItems(page, limit);
-
-    const [count, data] = await Promise.all([
-      this.databaseService.company.count({
-        where: {
-          userId,
-          companyName: {
-            contains: searchByName,
-            mode: 'insensitive',
-          },
-        },
-      }),
-
-      this.databaseService.company.findMany({
-        where: {
-          userId,
-        },
-        select: {
-          companyName: true,
-          prices: true,
-        },
-        skip: skipItems,
-        take: limit,
+        select:
+          role !== 'USER'
+            ? {
+                id: true,
+                companyName: true,
+                capital: true,
+              }
+            : {
+                id: true,
+                companyName: true,
+                prices: true,
+              },
       }),
     ]);
 

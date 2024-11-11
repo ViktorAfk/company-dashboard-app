@@ -37,7 +37,7 @@ model Company {
   capital     Float
   createdDate DateTime  @default(now())
   location    Location?
-  user        User      @relation(fields: [userId], references: [id])
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      Int
   prices      Price[]
   createdAt   DateTime  @default(now())
@@ -73,7 +73,7 @@ model Token {
 model ResetToken {
   id         Int      @id @default(autoincrement())
   resetToken String   @unique
-  user       User     @relation(fields: [userId], references: [id])
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     Int      @unique
   expiryDate DateTime
 }

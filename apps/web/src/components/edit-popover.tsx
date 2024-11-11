@@ -4,7 +4,7 @@ import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
 type Props = {
   editForm: React.ReactNode;
-  buttonText: string;
+  buttonText?: string;
   isOpen: boolean;
   setIsOpen: () => void;
   hasButtonTrigger?: boolean;
