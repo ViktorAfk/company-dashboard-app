@@ -15,7 +15,11 @@ async function bootstrap() {
     allowedOrigins.push('http://localhost:5173');
   }
 
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+    }),
+  );
 
   const config = new DocumentBuilder()
     .setTitle('Company dashboard API')
