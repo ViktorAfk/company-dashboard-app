@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import { EditPopover } from './edit-popover';
 import { EditUserForm } from './form/edit-user-form';
 import { PaginationItems } from './pagination-items';
+import { SubmitDialog } from './submit-dialog';
 import { Spinner } from './ui/Spinner';
 import { Button } from './ui/button';
 import {
@@ -25,6 +26,7 @@ import {
 } from './ui/table';
 
 export const AdminsList: React.FC = () => {
+  const [adminId, setAdminId] = useState<number | null>(null);
   const navigate = useNavigate();
   const { allQueryParams } = useQueryParams();
   const [admin, setAdmin] = useState<User | null>();
@@ -35,18 +37,20 @@ export const AdminsList: React.FC = () => {
     isLoading,
   } = useGetAllAdminsQuery({ page: allQueryParams.page });
 
-  const {
-    mutateAsync: deleteAdmin,
-    error: deleteError,
-    isPending,
-  } = useDeleteAdminMutation();
+  const { mutateAsync: deleteAdmin, error: deleteError } =
+    useDeleteAdminMutation();
 
-  const removeAdmin = async (id: number, fullName: string) => {
+  const removeAdmin = async () => {
     try {
-      await deleteAdmin(id);
+      if (!adminId) {
+        throw new Error("Admin's id is required");
+      }
+      const admin = await deleteAdmin(adminId);
       toast({
-        title: `Admin ${fullName} has been deleted`,
+        title: `Admin ${admin.name} ${admin.surname} has been deleted`,
       });
+      setAdminId(null);
+      removeIsActive();
     } catch (error) {
       console.error();
       toast({
@@ -114,10 +118,9 @@ export const AdminsList: React.FC = () => {
               <TableCell>
                 <Button
                   onClick={() => {
-                    const fullName = `${name} ${surname}`;
-                    removeAdmin(id, fullName);
+                    setAdminId(id);
+                    setIsActive();
                   }}
-                  disabled={isPending}
                   variant={'ghost'}
                 >
                   <Trash2Icon />
@@ -139,6 +142,12 @@ export const AdminsList: React.FC = () => {
           }
         />
       )}
+      <SubmitDialog
+        isActive={isActive}
+        removeValue={removeAdmin}
+        setIsActive={toggle}
+        message="admin"
+      />
     </div>
   );
 };
