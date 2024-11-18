@@ -10,6 +10,10 @@ export const useUpdatePriceQuery = () => {
         queryKey: ['company'],
         type: 'active',
       });
+      queryClient.invalidateQueries({
+        queryKey: ['dashboard'],
+        type: 'all',
+      });
     },
   });
 };
@@ -23,6 +27,10 @@ export const useCreatePriceQuery = () => {
         queryKey: ['company'],
         type: 'active',
       });
+      queryClient.invalidateQueries({
+        queryKey: ['dashboard'],
+        type: 'all',
+      });
     },
   });
 };
@@ -35,6 +43,10 @@ export const useDeletePriceQuery = () => {
       queryClient.invalidateQueries({
         queryKey: ['company'],
         type: 'active',
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['dashboard'],
+        type: 'all',
       });
     },
   });

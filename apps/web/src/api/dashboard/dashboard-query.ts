@@ -9,7 +9,7 @@ export const useGetCompaniesDashboardQuery = (params: {
   queryParams: Pick<SearchParamsType, 'page'>;
 }) => {
   return useQuery({
-    queryKey: ['companies', params.queryParams.page],
+    queryKey: ['dashboard', params.queryParams.page],
     queryFn: () => getAllCompaniesForDashboard(params),
   });
 };

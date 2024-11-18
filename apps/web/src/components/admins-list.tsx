@@ -39,7 +39,9 @@ export const AdminsList: React.FC = () => {
 
   const { mutateAsync: deleteAdmin, error: deleteError } =
     useDeleteAdminMutation();
-
+  const removeAdminValue = () => {
+    setAdmin(null);
+  };
   const removeAdmin = async () => {
     try {
       if (!adminId) {
@@ -49,8 +51,8 @@ export const AdminsList: React.FC = () => {
       toast({
         title: `Admin ${admin.name} ${admin.surname} has been deleted`,
       });
-      setAdminId(null);
-      removeIsActive();
+      removeAdminValue();
+      // removeIsActive();
     } catch (error) {
       console.error();
       toast({
@@ -106,7 +108,7 @@ export const AdminsList: React.FC = () => {
             <TableRow
               onDoubleClick={() => {
                 setAdmin({ id, name, surname, email, role });
-                setIsActive();
+                // setIsActive();
               }}
               key={id}
             >
@@ -135,10 +137,14 @@ export const AdminsList: React.FC = () => {
       )}
       {admin && (
         <EditPopover
-          isOpen={isActive}
-          setIsOpen={toggle}
+          isOpen={Boolean(admin)}
+          setIsOpen={removeAdminValue}
           editForm={
-            <EditUserForm isAdmin={true} user={admin} close={removeIsActive} />
+            <EditUserForm
+              isAdmin={true}
+              user={admin}
+              close={removeAdminValue}
+            />
           }
         />
       )}

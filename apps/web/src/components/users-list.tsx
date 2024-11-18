@@ -1,5 +1,6 @@
 import { useGetAllUsersQuery } from '@/api/user/users-query.ts';
 import { useQueryParams } from '@/hooks/use-query-params';
+// import { useNavigate } from 'react-router-dom';
 import { PaginationItems } from './pagination-items.tsx';
 import { Spinner } from './ui/Spinner';
 import {
@@ -14,6 +15,7 @@ import {
 
 export const UsersList: React.FC = () => {
   const { allQueryParams } = useQueryParams();
+  // const navigate = useNavigate();
   const {
     data: usersData,
     isError,
