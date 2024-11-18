@@ -65,26 +65,26 @@ export function Profile() {
               <p>{userData.role}</p>
             </div>
           </CardContent>
-          <CardFooter>
+          <CardFooter className="flex flex-col items-center">
             <Button onClick={setIsShowing}>Edit information</Button>
+            <EditPopover
+              setIsOpen={toggle}
+              isOpen={isShowing}
+              buttonText={'Edit info'}
+              editForm={
+                <EditUserForm
+                  user={{
+                    id: userData.id,
+                    email: userData.email,
+                    surname: userData.surname,
+                    name: userData.name,
+                  }}
+                  close={stopShowing}
+                />
+              }
+            />
           </CardFooter>
         </Card>
-        <EditPopover
-          setIsOpen={toggle}
-          isOpen={isShowing}
-          buttonText={'Edit info'}
-          editForm={
-            <EditUserForm
-              user={{
-                id: userData.id,
-                email: userData.email,
-                surname: userData.surname,
-                name: userData.name,
-              }}
-              close={stopShowing}
-            />
-          }
-        />
       </TabsContent>
       <TabsContent value="password">
         <Card>

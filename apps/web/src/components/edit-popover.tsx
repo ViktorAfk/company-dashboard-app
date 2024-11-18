@@ -1,5 +1,4 @@
 import React from 'react';
-import { Button } from './ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
 type Props = {
@@ -12,21 +11,15 @@ type Props = {
 
 export const EditPopover: React.FC<Props> = ({
   editForm,
-  buttonText,
+  // buttonText,
   isOpen,
   setIsOpen,
-  hasButtonTrigger = false,
+  // hasButtonTrigger = false,
 }) => {
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
-      <PopoverTrigger>
-        {hasButtonTrigger && (
-          <Button type="button" variant={'default'}>
-            {buttonText}
-          </Button>
-        )}
-      </PopoverTrigger>
-      <PopoverContent className="h-[400px] p-10 w-80 overflow-y-auto">
+      <PopoverTrigger />
+      <PopoverContent className="h-[400px] w-max p-10 overflow-y-auto">
         {editForm}
       </PopoverContent>
     </Popover>

@@ -1,11 +1,13 @@
 import { Company } from '@/api/types';
 import { parseDate } from '@/utils/parse-date';
 import { TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
-import React, { useState } from 'react';
+import React from 'react';
 import { CompanyField } from './company-field';
 import { EditPopover } from './edit-popover';
 import { CompanyForm } from './form/company-form';
 
+import { useToggleState } from '@/hooks/use-toggle-state';
+import { cn } from '@/lib/utils';
 import { ComponentsGuard } from '@/routes/auth/ComponentsGuard';
 import { CompanyLogo } from './company-logo';
 import { PriceForm } from './form/prices-form';
@@ -26,7 +28,8 @@ type Props = {
   company: Company;
 };
 export const CompanyInfo: React.FC<Props> = ({ company }) => {
-  const [isShownForm, setIsShownForm] = useState<boolean>(false);
+  const [shown, open, close, toggle] = useToggleState();
+
   const {
     id,
     avatar,
@@ -41,19 +44,8 @@ export const CompanyInfo: React.FC<Props> = ({ company }) => {
   } = company;
   const preparedDate = parseDate(createdDate);
 
-  const showForm = () => {
-    setIsShownForm(true);
-  };
-  const closeForm = () => {
-    setIsShownForm(false);
-  };
-
-  const toggle = () => {
-    setIsShownForm((value) => !value);
-  };
-
   return (
-    <Tabs defaultValue="company" className="max-w-md">
+    <Tabs defaultValue="company" className={cn('max-w-md', {})}>
       <TabsList className="grid w-full grid-cols-2">
         <TabsTrigger value="company">Company info</TabsTrigger>
         <TabsTrigger value="prices">Prices</TabsTrigger>
@@ -99,11 +91,13 @@ export const CompanyInfo: React.FC<Props> = ({ company }) => {
               />
             </div>
           </CardContent>
-          <CardFooter className="flex justify-center">
+          <CardFooter className="flex flex-col justify-center">
             <ComponentsGuard allowedRoles={['USER']}>
+              <Button onClick={open}>Edit information</Button>
+
               <EditPopover
                 hasButtonTrigger={true}
-                isOpen={isShownForm}
+                isOpen={shown}
                 setIsOpen={toggle}
                 buttonText="Edit company info"
                 editForm={
@@ -118,7 +112,7 @@ export const CompanyInfo: React.FC<Props> = ({ company }) => {
                       location,
                       userId,
                     }}
-                    closeForm={closeForm}
+                    closeForm={close}
                   />
                 }
               />
@@ -143,14 +137,12 @@ export const CompanyInfo: React.FC<Props> = ({ company }) => {
               <PriceList prices={prices} companyId={company.id} />
             )}
             <div>
-              {isShownForm && (
-                <PriceForm companyId={company.id} closeForm={closeForm} />
-              )}
+              {shown && <PriceForm companyId={company.id} closeForm={close} />}
             </div>
           </CardContent>
           <ComponentsGuard allowedRoles={['USER']}>
             <CardFooter>
-              <Button onClick={showForm}>Add price</Button>
+              <Button onClick={open}>Add price</Button>
             </CardFooter>
           </ComponentsGuard>
         </Card>
